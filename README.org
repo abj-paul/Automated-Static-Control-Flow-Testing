@@ -1,0 +1,20 @@
+* About
+C has always been a language where few automations were developed, mainly due to the mindset of the community. This is a project to automate test case generation for static control flow testing.
+
+* Installation
+#+begin_src bash
+python3 -m venv cparserEnv
+source cparserEnv/bin/activate
+pip install -r requirements.txt
+#pip install pycparser #https://github.com/eliben/pycparser/tree/master
+#+end_src
+
+* Execute
+We have a sample c file at ~test.c~. You can find more complex examples here [[https://github.com/eliben/pycparser/tree/master/examples][here]]. Check the c_files directory.
+
+Our main.py contains a boilerplate code from the above [[https://github.com/eliben/pycparser/tree/master/examples][link]]. This code converts a c file into a AST json format. You can run it by simply doing ~python3 main.py~.
+
+* TODO
+- [ ] Understanding AST : @Rifah @Muktadul
+- [ ] Converting JSON to Graph visualization @Jubaeer
+- [ ] DFS to find independent paths @Abhijit
