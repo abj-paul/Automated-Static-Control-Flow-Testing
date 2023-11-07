@@ -16,7 +16,7 @@ uvicorn main:app --reload
 * Endpoints
 We have two endpoints available. 
 ** /api/v1/code/project
-It takes the url of the C project as input, builds ast for each file of the project and returns it.
+It takes the url of the C project as input, builds ast for each file of the project and returns it, along with the variables defined in the code. We need to test these variables.
 
 The following is the input.
 #+begin_src json
@@ -32,6 +32,11 @@ The following is a part of the output.
 		"{\n    \"_nodetype\": \"FileAST\",\n    \"coord\": null,\n    \"ext\": [\n   
 ...
 		}
+	"variables": [
+			"paste",
+			"matrix",
+			"foo"
+		]
 }
 #+end_src
 ** /api/v1/code/code
@@ -50,6 +55,11 @@ The following is a part of the output.
 		"{\n    \"_nodetype\": \"FileAST\",\n    \"coord\": null,\n    \"ext\": [\n   
 ...
 		}
+	"variables": [
+			"paste",
+			"matrix",
+			"foo"
+		]
 }
 #+end_src
 
