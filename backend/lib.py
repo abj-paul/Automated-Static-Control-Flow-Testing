@@ -200,3 +200,4 @@ def generate_ast_and_get_json(file_name):
     ast_dict = file_to_dict(file_name)
     ast = from_dict(ast_dict)
     return to_json(ast, sort_keys=True, indent=4)
+
