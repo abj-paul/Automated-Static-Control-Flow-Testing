@@ -131,12 +131,6 @@ def file_to_dict(filename):
     return to_dict(ast)
 
 
-def file_to_json(filename, **kwargs):
-    """ Load C file into json string representation of ast """
-    ast = parse_file(filename, use_cpp=True)
-    return to_json(ast, **kwargs)
-
-
 def _parse_coord(coord_str):
     """ Parse coord string (file:line[:column]) into Coord object. """
     if coord_str is None:
@@ -190,6 +184,7 @@ def from_json(ast_json):
 
 
 #------------------------------------------------------------------------------
+'''
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         # Some test code...
@@ -199,3 +194,10 @@ if __name__ == "__main__":
         print(to_json(ast, sort_keys=True, indent=4))
     else:
         print("Please provide a filename as argument")
+'''
+
+def generate_ast_and_get_json(file_name):
+    ast_dict = file_to_dict(file_name)
+    ast = from_dict(ast_dict)
+    return to_json(ast, sort_keys=True, indent=4)
+
