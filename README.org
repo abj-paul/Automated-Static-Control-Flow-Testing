@@ -3,7 +3,8 @@ C has always been a language where few automations were developed, mainly due to
 
 * Installation
 #+begin_src bash
-python3 -m venv cparserEnv
+cd backend
+python3 -m venv backendEnv
 source cparserEnv/bin/activate
 pip install -r requirements.txt
 #pip install pycparser #https://github.com/eliben/pycparser/tree/master

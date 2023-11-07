@@ -131,12 +131,6 @@ def file_to_dict(filename):
     return to_dict(ast)
 
 
-def file_to_json(filename, **kwargs):
-    """ Load C file into json string representation of ast """
-    ast = parse_file(filename, use_cpp=True)
-    return to_json(ast, **kwargs)
-
-
 def _parse_coord(coord_str):
     """ Parse coord string (file:line[:column]) into Coord object. """
     if coord_str is None:
