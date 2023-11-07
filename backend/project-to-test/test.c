@@ -1,20 +1,18 @@
-char foo(void)
-{
-    return '1';
+int main() {
+    int x = 10;
+    int y = 5;
+
+    if (x > 5) {
+        printf("x is greater than 5\n");
+    } else {
+        printf("x is not greater than 5\n");
+    }
+
+    if (y > 5) {
+        printf("y is greater than 5\n");
+    } else {
+        printf("y is not greater than 5\n");
+    }
+
+    return 0;
 }
-
-int maxout_in(int paste, char** matrix)
-{
-    char o = foo();
-    return (int) matrix[1][2] * 5 - paste;
-}
-
-int main()
-{
-    auto char* multi = "a multi";
-    
-    
-}
-
-
-
