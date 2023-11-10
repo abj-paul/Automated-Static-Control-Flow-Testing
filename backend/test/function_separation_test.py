@@ -1,29 +1,18 @@
 import sys
-sys.path.append('..')
+sys.path.append("..")
+from preprocessing import extract_functions_from_c_code
 
-from AST import separate_functions
-
+# Example C code
 c_code = """
-#include <stdio.h>
-
-void hello() {
-    printf("Hello, world!\n");
-}
-
 int add(int a, int b) {
     return a + b;
 }
 
-int main() {
-    int result = add(5, 3);
-    printf("Result: %d\n", result);
-    return 0;
+void print_message(char *message) {
+    printf("%s\n", message);
 }
 """
 
-# Separate code into function segments
-function_segments = separate_functions(c_code)
-
-# Print each function segment
-for i, segment in enumerate(function_segments):
-    print(f"Function {i+1}:\n{segment}\n")
+functions = extract_functions_from_c_code(c_code)
+for func in functions:
+    print(func)
