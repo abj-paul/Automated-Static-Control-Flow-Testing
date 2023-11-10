@@ -53,7 +53,7 @@ async def generate_AST_from_project_url(code_url: ASTRequest):
                 print(f"DEBUG: Processing {filename}...")
                 filepath = os.path.join(root, filename)
                 functions = extract_functions_from_c_file(filepath)
-
+                print(f"DEBUG: {functions}")
                 file_asts = []
                 file_variables = []
                 for function in functions:
