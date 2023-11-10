@@ -8,6 +8,7 @@ from fastapi.responses import StreamingResponse
 import os
 
 from AST import generate_ast_and_get_json
+from SeparateFunctions import extract_functions_from_c_file
 from VariableHoisting import find_variables_to_test
 
 app = FastAPI()
@@ -22,14 +23,25 @@ app.add_middleware(
 class ASTRequest(BaseModel):
     code_url: str 
 
-@app.post("/api/v1/code/single")
+functions = []
+
+@app.post("/api/v1/code/file")
 async def generate_AST_from_code_url(code_url: ASTRequest):
     code_link = code_url.code_url
-    ast = generate_ast_and_get_json(code_link)
+    functions = extract_functions_from_c_file(code_link)
+    asts = []
+    variables = []
+    for function in functions:
+        print(f"DEBUG: {function}")
+
+        asts.append(generate_ast_and_get_json(function))
+        variables.append(find_variables_to_test(function))
+
     return {
-        "ast": ast,
-        "variables": find_variables_to_test(code_link) 
+        "asts": asts,
+        "variables": variables 
     }
+
 @app.post("/api/v1/code/project")
 async def generate_AST_from_project_url(code_url: ASTRequest):
     project_path = code_url.code_url #'./project-to-test/'
@@ -38,13 +50,20 @@ async def generate_AST_from_project_url(code_url: ASTRequest):
     for root, _, filenames in os.walk(project_path):
         for filename in filenames:
             if filename.endswith('.c'):
+                print(f"DEBUG: Processing {filename}...")
                 filepath = os.path.join(root, filename)
-                ast = generate_ast_and_get_json(filepath)
-                asts.append(ast)
-                variables.append(find_variables_to_test(filepath))
+                functions = extract_functions_from_c_file(filepath)
+
+                file_asts = []
+                file_variables = []
+                for function in functions:
+                    file_asts.append(generate_ast_and_get_json(function))
+                    file_variables.append(find_variables_to_test(function))
+                asts.append(file_asts)
+                variables.append(file_variables)
+
 
     return {
-        "numberOfAsts": len(asts),
-        "asts": asts,
-        "variables": variables 
+        "project_asts": asts,
+        "project_variables": variables 
     }

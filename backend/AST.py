@@ -43,13 +43,13 @@ import re
 #
 sys.path.extend(['.', '..'])
 
-from pycparser import parse_file, c_ast
-from pycparser.plyparser import Coord
+from pycparser import CParser
 
 
 RE_CHILD_ARRAY = re.compile(r'(.*)\[(.*)\]')
 RE_INTERNAL_ATTR = re.compile('__.*__')
 
+parser = CParser()
 
 class CJsonError(Exception):
     pass
@@ -124,80 +124,7 @@ def to_json(node, **kwargs):
     """ Convert ast node to json string """
     return json.dumps(to_dict(node), **kwargs)
 
-
-def file_to_dict(filename):
-    """ Load C file into dict representation of ast """
-    ast = parse_file(filename, use_cpp=True)
-    return to_dict(ast)
-
-
-def _parse_coord(coord_str):
-    """ Parse coord string (file:line[:column]) into Coord object. """
-    if coord_str is None:
-        return None
-
-    vals = coord_str.split(':')
-    vals.extend([None] * 3)
-    filename, line, column = vals[:3]
-    return Coord(filename, line, column)
-
-
-def _convert_to_obj(value):
-    """
-    Convert an object in the dict representation into an object.
-    Note: Mutually recursive with from_dict.
-
-    """
-    value_type = type(value)
-    if value_type == dict:
-        return from_dict(value)
-    elif value_type == list:
-        return [_convert_to_obj(item) for item in value]
-    else:
-        # String
-        return value
-
-
-def from_dict(node_dict):
-    """ Recursively build an ast from dict representation """
-    class_name = node_dict.pop('_nodetype')
-
-    klass = getattr(c_ast, class_name)
-
-    # Create a new dict containing the key-value pairs which we can pass
-    # to node constructors.
-    objs = {}
-    for key, value in node_dict.items():
-        if key == 'coord':
-            objs[key] = _parse_coord(value)
-        else:
-            objs[key] = _convert_to_obj(value)
-
-    # Use keyword parameters, which works thanks to beautifully consistent
-    # ast Node initializers.
-    return klass(**objs)
-
-
-def from_json(ast_json):
-    """ Build an ast from json string representation """
-    return from_dict(json.loads(ast_json))
-
-
-#------------------------------------------------------------------------------
-'''
-if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        # Some test code...
-        # Do trip from C -> ast -> dict -> ast -> json, then print.
-        ast_dict = file_to_dict(sys.argv[1])
-        ast = from_dict(ast_dict)
-        print(to_json(ast, sort_keys=True, indent=4))
-    else:
-        print("Please provide a filename as argument")
-'''
-
-def generate_ast_and_get_json(file_name):
-    ast_dict = file_to_dict(file_name)
-    ast = from_dict(ast_dict)
+def generate_ast_and_get_json(c_function_code):
+    ast = parser.parse(c_function_code)
     return to_json(ast, sort_keys=True, indent=4)
 
