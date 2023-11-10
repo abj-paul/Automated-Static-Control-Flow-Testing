@@ -1,5 +1,9 @@
 * About
 C has always been a language where few automations were developed, mainly due to the mindset of the community. This is a project to automate test case generation for static control flow testing.
+** Branches
+Currently we are working on two branch.
+- dev branch is implementing the AST
+- backend branch is implementing the miscellaneouns functionalities
 
 * Installation
 #+begin_src bash
