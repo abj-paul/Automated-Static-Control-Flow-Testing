@@ -38,6 +38,7 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
         variables.append(find_variables_to_test(function))
 
     return {
+        "functions": functions,
         "asts": asts,
         "variables": variables 
     }
@@ -47,6 +48,7 @@ async def generate_AST_from_project_url(code_url: ASTRequest):
     project_path = code_url.code_url #'./project-to-test/'
     asts = []
     variables = []
+    all_functions = []
     for root, _, filenames in os.walk(project_path):
         for filename in filenames:
             if filename.endswith('.c'):
@@ -61,9 +63,11 @@ async def generate_AST_from_project_url(code_url: ASTRequest):
                     file_variables.append(find_variables_to_test(function))
                 asts.append(file_asts)
                 variables.append(file_variables)
+                all_functions.append(functions)
 
 
     return {
+        "functions": all_functions,
         "project_asts": asts,
-        "project_variables": variables 
+        "project_variables": variables
     }

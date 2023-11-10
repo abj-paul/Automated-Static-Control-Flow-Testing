@@ -22,6 +22,8 @@ We have two endpoints available.
 ** /api/v1/code/project
 It takes the url of the C project as input, builds ast for each file of the project and returns it, along with the variables defined in the code. We need to test these variables.
 
+Note that, it returns everything in a 2D array. For each file, it creates a list of variables and asts. And then it pushes the lists in a super list(list of list so 2D) and returns it.
+
 The following is the input.
 #+begin_src json
 {
@@ -30,21 +32,32 @@ The following is the input.
 #+end_src
 The following is a part of the output.
 #+begin_src json
-{
-	"numberOfAsts": 1,
+{	
+	"functions": [
+		[
+			"int main() {\n    int x = 10;\n    int y = 5;\n\n    if (x > 5) {\n        printf(\"x is greater than 5\\n\");\n    } else {\n        printf(\"x is not greater than 5\\n\");\n    }\n\n    if (y > 5) {\n        printf(\"y is greater than 5\\n\");\n    } else {\n        printf(\"y is not greater than 5\\n\");\n    }\n\n    return 0;\n}"
+		],
+		[
+			"int main() {\n    int x = 10;\n    int y = 5;\n\n    if (x > 5) {\n        y = 10;\n    } else if (x < 5) {\n        y = 20;\n    } else {\n        y = 30;\n    }\n\n    while (x > 0) {\n        x--;\n    }\n\n    return 0;\n}"
+		]
+	],
 	"asts": [
+		[
 		"{\n    \"_nodetype\": \"FileAST\",\n    \"coord\": null,\n    \"ext\": [\n   
 ...
 		}
-	"variables": [
+		]
+	"variables": [[
 			"paste",
 			"matrix",
 			"foo"
 		]
+		]
 }
 #+end_src
 ** /api/v1/code/code
-It takes the url of a single C file as input, builds ast for it and returns it.
+It takes the url of a single C file as input, builds ast for each of its functions and returns it.
+Note that, a file may have multiple functions so it returns a list of asts along with the corresponding function.
 
 The following is the input.
 #+begin_src json
@@ -55,7 +68,15 @@ The following is the input.
 The following is a part of the output.
 #+begin_src json
 {
-	"ast": [
+	"functions": [
+		[
+			"int main() {\n    int x = 10;\n    int y = 5;\n\n    if (x > 5) {\n        printf(\"x is greater than 5\\n\");\n    } else {\n        printf(\"x is not greater than 5\\n\");\n    }\n\n    if (y > 5) {\n        printf(\"y is greater than 5\\n\");\n    } else {\n        printf(\"y is not greater than 5\\n\");\n    }\n\n    return 0;\n}"
+		],
+		[
+			"int main() {\n    int x = 10;\n    int y = 5;\n\n    if (x > 5) {\n        y = 10;\n    } else if (x < 5) {\n        y = 20;\n    } else {\n        y = 30;\n    }\n\n    while (x > 0) {\n        x--;\n    }\n\n    return 0;\n}"
+		]
+	],
+	"asts": [
 		"{\n    \"_nodetype\": \"FileAST\",\n    \"coord\": null,\n    \"ext\": [\n   
 ...
 		}
