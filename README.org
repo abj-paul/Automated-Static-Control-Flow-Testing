@@ -46,7 +46,32 @@ The following is a part of the output.
 		"{\n    \"_nodetype\": \"FileAST\",\n    \"coord\": null,\n    \"ext\": [\n   
 ...
 		}
+		],
+			"metrics": {
+		"NumberOfFunctions": 3,
+		"NumberOfVariables": 0,
+		"NumberOfStatements": 0,
+		"FunctionMetrics": [
+			{
+				"FunctionName": "main",
+				"CyclomaticComplexity": 1,
+				"NumberOfStatements": 3,
+				"NumberOfVariables": 2
+			},
+			{
+				"FunctionName": "anotherFunction",
+				"CyclomaticComplexity": 2,
+				"NumberOfStatements": 2,
+				"NumberOfVariables": 3
+			},
+			{
+				"FunctionName": "uwuFunction",
+				"CyclomaticComplexity": 2,
+				"NumberOfStatements": 2,
+				"NumberOfVariables": 3
+			}
 		]
+	},
 	"variables": [[
 			"paste",
 			"matrix",
@@ -79,7 +104,32 @@ The following is a part of the output.
 	"asts": [
 		"{\n    \"_nodetype\": \"FileAST\",\n    \"coord\": null,\n    \"ext\": [\n   
 ...
-		}
+		},
+			"metrics": {
+		"NumberOfFunctions": 3,
+		"NumberOfVariables": 0,
+		"NumberOfStatements": 0,
+		"FunctionMetrics": [
+			{
+				"FunctionName": "main",
+				"CyclomaticComplexity": 1,
+				"NumberOfStatements": 3,
+				"NumberOfVariables": 2
+			},
+			{
+				"FunctionName": "anotherFunction",
+				"CyclomaticComplexity": 2,
+				"NumberOfStatements": 2,
+				"NumberOfVariables": 3
+			},
+			{
+				"FunctionName": "uwuFunction",
+				"CyclomaticComplexity": 2,
+				"NumberOfStatements": 2,
+				"NumberOfVariables": 3
+			}
+		]
+	},
 	"variables": [
 			"paste",
 			"matrix",
@@ -98,3 +148,15 @@ Our main.py contains a boilerplate code from the above [[https://github.com/elib
 - [ ] Understanding AST : @Rifah @Muktadul
 - [ ] Converting JSON to Graph visualization @Jubaeer
 - [ ] DFS to find independent paths @Abhijit
+
+* More structured scheme
+
+We built one static control flow graph for each function when performing unit testing. So we will do the same here as well.
+
+- Split functions
+- For each function, draw an AST
+- Find variables and independent paths in those AST
+- Calculate LoC and cyclometric complexity
+- Check coding style (e.g. indentation, naming etc)
+- Detecting dead code, unreachable code
+- Automated Documentation Generation (We show independent control flows of the function for each data.)

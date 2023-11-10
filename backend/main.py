@@ -10,6 +10,7 @@ import os
 from AST import generate_ast_and_get_json
 from SeparateFunctions import extract_functions_from_c_file
 from VariableHoisting import find_variables_to_test
+from backend.Metrics import calculate_metrics
 
 app = FastAPI()
 app.add_middleware(
@@ -40,6 +41,7 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
     return {
         "functions": functions,
         "asts": asts,
+        "metrics": calculate_metrics(code_link),
         "variables": variables 
     }
 
@@ -49,6 +51,7 @@ async def generate_AST_from_project_url(code_url: ASTRequest):
     asts = []
     variables = []
     all_functions = []
+    metrics = []
     for root, _, filenames in os.walk(project_path):
         for filename in filenames:
             if filename.endswith('.c'):
@@ -64,10 +67,13 @@ async def generate_AST_from_project_url(code_url: ASTRequest):
                 asts.append(file_asts)
                 variables.append(file_variables)
                 all_functions.append(functions)
+                metrics.append(calculate_metrics(filepath))
+
 
 
     return {
         "functions": all_functions,
         "project_asts": asts,
+        "metrics": metrics,
         "project_variables": variables
     }

@@ -12,13 +12,4 @@ def extract_functions_from_c_file(file_path):
 
     # Return the list of functions along with their code
     return matches
-'''
-if __name__ == "__main__":
-    # Replace 'your_file.c' with the path to your C file
-    c_file_path = 'project-to-test/paths.c'
 
-    functions = extract_functions(c_file_path)
-
-    for i, function in enumerate(functions, start=1):
-        print(f"Function {i}:\n{function}\n")
-'''

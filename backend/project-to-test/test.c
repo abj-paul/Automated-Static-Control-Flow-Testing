@@ -1,18 +1,26 @@
-int main() {
+void main() {
     int x = 10;
-    int y = 5;
-
-    if (x > 5) {
-        printf("x is greater than 5\n");
+    if (x > 0) {
+        x = x - 1;
+        while (x > 5) {
+            x = x - 2;
+        }
     } else {
-        printf("x is not greater than 5\n");
+        x = x + 1;
     }
-
-    if (y > 5) {
-        printf("y is greater than 5\n");
-    } else {
-        printf("y is not greater than 5\n");
-    }
-
     return 0;
+}
+
+void anotherFunction() {
+    int y = 5;
+    for (int i = 0; i < y; i++) {
+        y += i;
+    }
+}
+
+void uwuFunction() {
+    int y = 5;
+    for (int i = 0; i < y; i++) {
+        y += i;
+    }
 }
