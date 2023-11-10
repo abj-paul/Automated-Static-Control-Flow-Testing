@@ -8,6 +8,7 @@ void main() {
     } else {
         x = x + 1;
     }
+    anotherFunction();
     return 0;
 }
 
@@ -16,6 +17,7 @@ void anotherFunction() {
     for (int i = 0; i < y; i++) {
         y += i;
     }
+    uwuFunction();
 }
 
 void uwuFunction() {

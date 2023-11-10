@@ -38,6 +38,7 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
 
         asts.append(generate_ast_and_get_json(function))
         variables.append(find_variables_to_test(function))
+        draw_ast(function, f"temp/{hash(function)}")
 
     return {
         "functions": functions,
