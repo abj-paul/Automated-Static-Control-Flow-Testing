@@ -12,6 +12,7 @@ from SeparateFunctions import extract_functions_from_c_file
 from VariableHoisting import find_variables_to_test
 from backend.CheckCodingStyle import get_variable_cases
 from backend.Metrics import calculate_metrics
+from backend.report import generate_report
 
 app = FastAPI()
 app.add_middleware(
@@ -38,7 +39,6 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
 
         asts.append(generate_ast_and_get_json(function))
         variables.append(find_variables_to_test(function))
-        draw_ast(function, f"temp/{hash(function)}")
 
     return {
         "functions": functions,
@@ -73,12 +73,15 @@ async def generate_AST_from_project_url(code_url: ASTRequest):
                 all_functions.append(functions)
                 metrics.append(calculate_metrics(filepath))
                 smells.append(get_variable_cases(filepath))
-
-
-    return {
+   
+    results =  {
         "functions": all_functions,
-        "project_asts": asts,
+        "asts": asts,
         "metrics": metrics,
-        "project_variables": variables,
+        "variables": variables,
         "smell": smells
     }
+    #print(generate_report(results))
+
+
+    return results
