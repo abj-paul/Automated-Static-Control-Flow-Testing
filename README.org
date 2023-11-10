@@ -63,7 +63,6 @@ The following is a part of the output.
 }
 #+end_src
 
-
 * Execute
 We have a sample c file at ~test.c~. You can find more complex examples here [[https://github.com/eliben/pycparser/tree/master/examples][here]]. Check the c_files directory.
 
@@ -71,5 +70,12 @@ Our main.py contains a boilerplate code from the above [[https://github.com/elib
 
 * TODO
 - [ ] Understanding AST : @Rifah @Muktadul
-- [ ] Converting JSON to Graph visualization @Jubaeer
+- [X] Converting JSON to Graph visualization @abhijit
 - [ ] DFS to find independent paths @Abhijit
+** More structured scheme
+We built one static control flow graph for each function when performing unit testing. So we will do the same here as well.
+1. Split functions
+2. For each function, draw an AST
+3. Find variables and independent paths in those AST
+
+Let us start from the beginning again.
