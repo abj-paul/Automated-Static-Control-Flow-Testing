@@ -12,7 +12,7 @@ from SeparateFunctions import extract_functions_from_c_file
 from VariableHoisting import find_variables_to_test
 from backend.CheckCodingStyle import get_variable_cases
 from backend.Metrics import calculate_metrics
-from backend.report import generate_report
+from backend.temp.report import generate_report
 
 app = FastAPI()
 app.add_middleware(
