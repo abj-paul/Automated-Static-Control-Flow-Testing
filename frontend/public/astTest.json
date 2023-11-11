@@ -1,0 +1,107 @@
+{
+    "_nodetype": "FileAST",
+    "coord": null,
+    "ext": [
+        {
+            "_nodetype": "FuncDef",
+            "body": {
+                "_nodetype": "Compound",
+                "block_items": null,
+                "coord": "test.c:1:1"
+            },
+            "coord": "test.c:1:5",
+            "decl": {
+                "_nodetype": "Decl",
+                "align": [],
+                "bitsize": null,
+                "coord": "test.c:1:5",
+                "funcspec": [],
+                "init": null,
+                "name": "foo",
+                "quals": [],
+                "storage": [],
+                "type": {
+                    "_nodetype": "FuncDecl",
+                    "args": null,
+                    "coord": "test.c:1:5",
+                    "type": {
+                        "_nodetype": "TypeDecl",
+                        "align": null,
+                        "coord": "test.c:1:5",
+                        "declname": "foo",
+                        "quals": [],
+                        "type": {
+                            "_nodetype": "IdentifierType",
+                            "coord": "test.c:1:1",
+                            "names": [
+                                "int"
+                            ]
+                        }
+                    }
+                }
+            },
+            "param_decls": null
+        },
+        {
+            "_nodetype": "FuncDef",
+            "body": {
+                "_nodetype": "Compound",
+                "block_items": [
+                    {
+                        "_nodetype": "FuncCall",
+                        "args": null,
+                        "coord": "test.c:4:3",
+                        "name": {
+                            "_nodetype": "ID",
+                            "coord": "test.c:4:3",
+                            "name": "foo"
+                        }
+                    },
+                    {
+                        "_nodetype": "Return",
+                        "coord": "test.c:5:3",
+                        "expr": {
+                            "_nodetype": "Constant",
+                            "coord": "test.c:5:10",
+                            "type": "int",
+                            "value": "0"
+                        }
+                    }
+                ],
+                "coord": "test.c:3:1"
+            },
+            "coord": "test.c:3:5",
+            "decl": {
+                "_nodetype": "Decl",
+                "align": [],
+                "bitsize": null,
+                "coord": "test.c:3:5",
+                "funcspec": [],
+                "init": null,
+                "name": "main",
+                "quals": [],
+                "storage": [],
+                "type": {
+                    "_nodetype": "FuncDecl",
+                    "args": null,
+                    "coord": "test.c:3:5",
+                    "type": {
+                        "_nodetype": "TypeDecl",
+                        "align": null,
+                        "coord": "test.c:3:5",
+                        "declname": "main",
+                        "quals": [],
+                        "type": {
+                            "_nodetype": "IdentifierType",
+                            "coord": "test.c:3:1",
+                            "names": [
+                                "int"
+                            ]
+                        }
+                    }
+                }
+            },
+            "param_decls": null
+        }
+    ]
+}
