@@ -77,8 +77,5 @@ We built one static control flow graph for each function when performing unit te
 1. Split functions
 2. For each function, draw an AST
 3. Find variables and independent paths in those AST
-4. Calculate LoC and cyclometric complexity
-5. Check coding style (e.g. indentation, naming etc)
-6. Detecting dead code, unreachable code
-7. Automated Documentation Generation (We show independent control flows of the function for each data.)
 
+Let us start from the beginning again.
