@@ -7,7 +7,7 @@
 # License: BSD
 #------------------------------------------------------------------------------
 
-from . import c_ast
+from . import cfg
 
 
 def fix_switch_cases(switch_node):
@@ -61,13 +61,13 @@ def fix_switch_cases(switch_node):
 
         A fixed AST node is returned. The argument may be modified.
     """
-    assert isinstance(switch_node, c_ast.Switch)
-    if not isinstance(switch_node.stmt, c_ast.Compound):
+    assert isinstance(switch_node, cfg.Switch)
+    if not isinstance(switch_node.stmt, cfg.Compound):
         return switch_node
 
     # The new Compound child for the Switch, which will collect children in the
     # correct order
-    new_compound = c_ast.Compound([], switch_node.stmt.coord)
+    new_compound = cfg.Compound([], switch_node.stmt.coord)
 
     # The last Case/Default node
     last_case = None
@@ -76,7 +76,7 @@ def fix_switch_cases(switch_node):
     # either directly below new_compound or below the last Case as appropriate
     # (for `switch(cond) {}`, block_items would have been None)
     for child in (switch_node.stmt.block_items or []):
-        if isinstance(child, (c_ast.Case, c_ast.Default)):
+        if isinstance(child, (cfg.Case, cfg.Default)):
             # If it's a Case/Default:
             # 1. Add it to the Compound and mark as "last case"
             # 2. If its immediate child is also a Case or Default, promote it
@@ -100,7 +100,7 @@ def _extract_nested_case(case_node, stmts_list):
     """ Recursively extract consecutive Case statements that are made nested
         by the parser and add them to the stmts_list.
     """
-    if isinstance(case_node.stmts[0], (c_ast.Case, c_ast.Default)):
+    if isinstance(case_node.stmts[0], (cfg.Case, cfg.Default)):
         stmts_list.append(case_node.stmts.pop())
         _extract_nested_case(stmts_list[-1], stmts_list)
 
@@ -124,7 +124,7 @@ def fix_atomic_specifiers(decl):
     # restore the declname on the innermost TypeDecl (it gets placed in the
     # wrong place during construction).
     typ = decl
-    while not isinstance(typ, c_ast.TypeDecl):
+    while not isinstance(typ, cfg.TypeDecl):
         try:
             typ = typ.type
         except AttributeError:
@@ -145,7 +145,7 @@ def _fix_atomic_specifiers_once(decl):
     grandparent = None
     node = decl.type
     while node is not None:
-        if isinstance(node, c_ast.Typename) and '_Atomic' in node.quals:
+        if isinstance(node, cfg.Typename) and '_Atomic' in node.quals:
             break
         try:
             grandparent = parent
@@ -157,7 +157,7 @@ def _fix_atomic_specifiers_once(decl):
             # and return the original decl unmodified.
             return decl, False
 
-    assert isinstance(parent, c_ast.TypeDecl)
+    assert isinstance(parent, cfg.TypeDecl)
     grandparent.type = node.type
     if '_Atomic' not in node.type.quals:
         node.type.quals.append('_Atomic')

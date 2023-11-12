@@ -43,7 +43,7 @@ import re
 #
 sys.path.extend(['.', '..'])
 
-from backend.CFG_C.c_parser import CParser
+from backend.CFG_C.parser import CParser
 
 
 RE_CHILD_ARRAY = re.compile(r'(.*)\[(.*)\]')

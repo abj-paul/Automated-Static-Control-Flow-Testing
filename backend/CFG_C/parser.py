@@ -7,11 +7,11 @@
 # License: BSD
 #------------------------------------------------------------------------------
 
-from . import c_ast
+from . import cfg
 from ply import yacc
-from backend.CFG_C.c_lexer import CLexer
+from backend.CFG_C.lexer import CLexer
 from backend.CFG_C.PlyParser import PLYParser, ParseError, parameterized, template
-from backend.CFG_C.ast_transforms import fix_switch_cases, fix_atomic_specifiers
+from backend.CFG_C.transforms import fix_switch_cases, fix_atomic_specifiers
 
 
 @template
@@ -265,7 +265,7 @@ class CParser(PLYParser):
             modifier_tail = modifier_tail.type
 
         # If the decl is a basic type, just tack the modifier onto it.
-        if isinstance(decl, c_ast.TypeDecl):
+        if isinstance(decl, cfg.TypeDecl):
             modifier_tail.type = decl
             return modifier
         else:
@@ -274,7 +274,7 @@ class CParser(PLYParser):
             # pointing to the underlying basic type.
             decl_tail = decl
 
-            while not isinstance(decl_tail.type, c_ast.TypeDecl):
+            while not isinstance(decl_tail.type, cfg.TypeDecl):
                 decl_tail = decl_tail.type
 
             modifier_tail.type = decl_tail.type
@@ -302,7 +302,7 @@ class CParser(PLYParser):
         # Reach the underlying basic type
         #
         type = decl
-        while not isinstance(type, c_ast.TypeDecl):
+        while not isinstance(type, cfg.TypeDecl):
             type = type.type
 
         decl.name = type.declname
@@ -314,7 +314,7 @@ class CParser(PLYParser):
         # If all the types are basic, they're collected in the
         # IdentifierType holder.
         for tn in typename:
-            if not isinstance(tn, c_ast.IdentifierType):
+            if not isinstance(tn, cfg.IdentifierType):
                 if len(typename) > 1:
                     self._parse_error(
                         "Invalid multiple types specified", tn.coord)
@@ -325,17 +325,17 @@ class CParser(PLYParser):
         if not typename:
             # Functions default to returning int
             #
-            if not isinstance(decl.type, c_ast.FuncDecl):
+            if not isinstance(decl.type, cfg.FuncDecl):
                 self._parse_error(
                         "Missing type in declaration", decl.coord)
-            type.type = c_ast.IdentifierType(
+            type.type = cfg.IdentifierType(
                     ['int'],
                     coord=decl.coord)
         else:
             # At this point, we know that typename is a list of IdentifierType
             # nodes. Concatenate all the names into a single list.
             #
-            type.type = c_ast.IdentifierType(
+            type.type = cfg.IdentifierType(
                 [name for id in typename for name in id.names],
                 coord=typename[0].coord)
         return decl
@@ -393,7 +393,7 @@ class CParser(PLYParser):
                 self._parse_error('Invalid declaration', coord)
 
             # Make this look as if it came from "direct_declarator:ID"
-            decls[0]['decl'] = c_ast.TypeDecl(
+            decls[0]['decl'] = cfg.TypeDecl(
                 declname=spec['type'][-1].names[0],
                 type=None,
                 quals=None,
@@ -405,9 +405,9 @@ class CParser(PLYParser):
         # A similar problem can occur where the declaration ends up looking
         # like an abstract declarator.  Give it a name if this is the case.
         elif not isinstance(decls[0]['decl'], (
-                c_ast.Enum, c_ast.Struct, c_ast.Union, c_ast.IdentifierType)):
+                cfg.Enum, cfg.Struct, cfg.Union, cfg.IdentifierType)):
             decls_0_tail = decls[0]['decl']
-            while not isinstance(decls_0_tail, c_ast.TypeDecl):
+            while not isinstance(decls_0_tail, cfg.TypeDecl):
                 decls_0_tail = decls_0_tail.type
             if decls_0_tail.declname is None:
                 decls_0_tail.declname = spec['type'][-1].names[0]
@@ -416,14 +416,14 @@ class CParser(PLYParser):
         for decl in decls:
             assert decl['decl'] is not None
             if is_typedef:
-                declaration = c_ast.Typedef(
+                declaration = cfg.Typedef(
                     name=None,
                     quals=spec['qual'],
                     storage=spec['storage'],
                     type=decl['decl'],
                     coord=decl['decl'].coord)
             else:
-                declaration = c_ast.Decl(
+                declaration = cfg.Decl(
                     name=None,
                     quals=spec['qual'],
                     align=spec['alignment'],
@@ -435,8 +435,8 @@ class CParser(PLYParser):
                     coord=decl['decl'].coord)
 
             if isinstance(declaration.type, (
-                    c_ast.Enum, c_ast.Struct, c_ast.Union,
-                    c_ast.IdentifierType)):
+                    cfg.Enum, cfg.Struct, cfg.Union,
+                    cfg.IdentifierType)):
                 fixed_decl = declaration
             else:
                 fixed_decl = self._fix_decl_name_type(declaration, spec['type'])
@@ -465,7 +465,7 @@ class CParser(PLYParser):
             decls=[dict(decl=decl, init=None)],
             typedef_namespace=True)[0]
 
-        return c_ast.FuncDef(
+        return cfg.FuncDef(
             decl=declaration,
             param_decls=param_decls,
             body=body,
@@ -476,9 +476,9 @@ class CParser(PLYParser):
             appropriate AST class.
         """
         if token == 'struct':
-            return c_ast.Struct
+            return cfg.Struct
         else:
-            return c_ast.Union
+            return cfg.Union
 
     ##
     ## Precedence and associativity of operators
@@ -510,9 +510,9 @@ class CParser(PLYParser):
                                         | empty
         """
         if p[1] is None:
-            p[0] = c_ast.FileAST([])
+            p[0] = cfg.FileAST([])
         else:
-            p[0] = c_ast.FileAST(p[1])
+            p[0] = cfg.FileAST(p[1])
 
     def p_translation_unit_1(self, p):
         """ translation_unit    : external_declaration
@@ -561,9 +561,9 @@ class CParser(PLYParser):
                                     | _STATIC_ASSERT LPAREN constant_expression RPAREN
         """
         if len(p) == 5:
-            p[0] = [c_ast.StaticAssert(p[3], None, self._token_coord(p, 1))]
+            p[0] = [cfg.StaticAssert(p[3], None, self._token_coord(p, 1))]
         else:
-            p[0] = [c_ast.StaticAssert(p[3], p[5], self._token_coord(p, 1))]
+            p[0] = [cfg.StaticAssert(p[3], p[5], self._token_coord(p, 1))]
 
     def p_pp_directive(self, p):
         """ pp_directive  : PPHASH
@@ -582,11 +582,11 @@ class CParser(PLYParser):
                                     | _PRAGMA LPAREN unified_string_literal RPAREN
         """
         if len(p) == 5:
-            p[0] = c_ast.Pragma(p[3], self._token_coord(p, 2))
+            p[0] = cfg.Pragma(p[3], self._token_coord(p, 2))
         elif len(p) == 3:
-            p[0] = c_ast.Pragma(p[2], self._token_coord(p, 2))
+            p[0] = cfg.Pragma(p[2], self._token_coord(p, 2))
         else:
-            p[0] = c_ast.Pragma("", self._token_coord(p, 1))
+            p[0] = cfg.Pragma("", self._token_coord(p, 1))
 
     def p_pppragma_directive_list(self, p):
         """ pppragma_directive_list : pppragma_directive
@@ -604,7 +604,7 @@ class CParser(PLYParser):
             qual=[],
             alignment=[],
             storage=[],
-            type=[c_ast.IdentifierType(['int'],
+            type=[cfg.IdentifierType(['int'],
                                        coord=self._token_coord(p, 1))],
             function=[])
 
@@ -689,7 +689,7 @@ class CParser(PLYParser):
                                         | statement
         """
         if len(p) == 3:
-            p[0] = c_ast.Compound(
+            p[0] = cfg.Compound(
                 block_items=p[1]+[p[2]],
                 coord=self._token_coord(p, 1))
         else:
@@ -718,9 +718,9 @@ class CParser(PLYParser):
             # enumeration.
             #
             ty = spec['type']
-            s_u_or_e = (c_ast.Struct, c_ast.Union, c_ast.Enum)
+            s_u_or_e = (cfg.Struct, cfg.Union, cfg.Enum)
             if len(ty) == 1 and isinstance(ty[0], s_u_or_e):
-                decls = [c_ast.Decl(
+                decls = [cfg.Decl(
                     name=None,
                     quals=spec['qual'],
                     align=spec['alignment'],
@@ -877,7 +877,7 @@ class CParser(PLYParser):
                                       | UNSIGNED
                                       | __INT128
         """
-        p[0] = c_ast.IdentifierType([p[1]], coord=self._token_coord(p, 1))
+        p[0] = cfg.IdentifierType([p[1]], coord=self._token_coord(p, 1))
 
     def p_type_specifier(self, p):
         """ type_specifier  : typedef_name
@@ -1049,10 +1049,10 @@ class CParser(PLYParser):
             # here, and pycparser isn't about rejecting all invalid code.
             #
             node = spec['type'][0]
-            if isinstance(node, c_ast.Node):
+            if isinstance(node, cfg.Node):
                 decl_type = node
             else:
-                decl_type = c_ast.IdentifierType(node)
+                decl_type = cfg.IdentifierType(node)
 
             decls = self._build_declarations(
                 spec=spec,
@@ -1100,24 +1100,24 @@ class CParser(PLYParser):
         if len(p) > 3:
             p[0] = {'decl': p[1], 'bitsize': p[3]}
         else:
-            p[0] = {'decl': c_ast.TypeDecl(None, None, None, None), 'bitsize': p[2]}
+            p[0] = {'decl': cfg.TypeDecl(None, None, None, None), 'bitsize': p[2]}
 
     def p_enum_specifier_1(self, p):
         """ enum_specifier  : ENUM ID
                             | ENUM TYPEID
         """
-        p[0] = c_ast.Enum(p[2], None, self._token_coord(p, 1))
+        p[0] = cfg.Enum(p[2], None, self._token_coord(p, 1))
 
     def p_enum_specifier_2(self, p):
         """ enum_specifier  : ENUM brace_open enumerator_list brace_close
         """
-        p[0] = c_ast.Enum(None, p[3], self._token_coord(p, 1))
+        p[0] = cfg.Enum(None, p[3], self._token_coord(p, 1))
 
     def p_enum_specifier_3(self, p):
         """ enum_specifier  : ENUM ID brace_open enumerator_list brace_close
                             | ENUM TYPEID brace_open enumerator_list brace_close
         """
-        p[0] = c_ast.Enum(p[2], p[4], self._token_coord(p, 1))
+        p[0] = cfg.Enum(p[2], p[4], self._token_coord(p, 1))
 
     def p_enumerator_list(self, p):
         """ enumerator_list : enumerator
@@ -1125,7 +1125,7 @@ class CParser(PLYParser):
                             | enumerator_list COMMA enumerator
         """
         if len(p) == 2:
-            p[0] = c_ast.EnumeratorList([p[1]], p[1].coord)
+            p[0] = cfg.EnumeratorList([p[1]], p[1].coord)
         elif len(p) == 3:
             p[0] = p[1]
         else:
@@ -1136,18 +1136,18 @@ class CParser(PLYParser):
         """ alignment_specifier  : _ALIGNAS LPAREN type_name RPAREN
                                  | _ALIGNAS LPAREN constant_expression RPAREN
         """
-        p[0] = c_ast.Alignas(p[3], self._token_coord(p, 1))
+        p[0] = cfg.Alignas(p[3], self._token_coord(p, 1))
 
     def p_enumerator(self, p):
         """ enumerator  : ID
                         | ID EQUALS constant_expression
         """
         if len(p) == 2:
-            enumerator = c_ast.Enumerator(
+            enumerator = cfg.Enumerator(
                         p[1], None,
                         self._token_coord(p, 1))
         else:
-            enumerator = c_ast.Enumerator(
+            enumerator = cfg.Enumerator(
                         p[1], p[3],
                         self._token_coord(p, 1))
         self._add_identifier(enumerator.name, enumerator.coord)
@@ -1176,7 +1176,7 @@ class CParser(PLYParser):
     def p_direct_xxx_declarator_1(self, p):
         """ direct_xxx_declarator   : yyy
         """
-        p[0] = c_ast.TypeDecl(
+        p[0] = cfg.TypeDecl(
             declname=p[1],
             type=None,
             quals=None,
@@ -1196,7 +1196,7 @@ class CParser(PLYParser):
         quals = (p[3] if len(p) > 5 else []) or []
         # Accept dimension qualifiers
         # Per C99 6.7.5.3 p7
-        arr = c_ast.ArrayDecl(
+        arr = cfg.ArrayDecl(
             type=None,
             dim=p[4] if len(p) > 5 else p[3],
             dim_quals=quals,
@@ -1216,7 +1216,7 @@ class CParser(PLYParser):
             for item in [p[3],p[4]]]
         dim_quals = [qual for sublist in listed_quals for qual in sublist
             if qual is not None]
-        arr = c_ast.ArrayDecl(
+        arr = cfg.ArrayDecl(
             type=None,
             dim=p[5],
             dim_quals=dim_quals,
@@ -1230,9 +1230,9 @@ class CParser(PLYParser):
     def p_direct_xxx_declarator_5(self, p):
         """ direct_xxx_declarator   : direct_xxx_declarator LBRACKET type_qualifier_list_opt TIMES RBRACKET
         """
-        arr = c_ast.ArrayDecl(
+        arr = cfg.ArrayDecl(
             type=None,
-            dim=c_ast.ID(p[4], self._token_coord(p, 4)),
+            dim=cfg.ID(p[4], self._token_coord(p, 4)),
             dim_quals=p[3] if p[3] is not None else [],
             coord=p[1].coord)
 
@@ -1243,7 +1243,7 @@ class CParser(PLYParser):
         """ direct_xxx_declarator   : direct_xxx_declarator LPAREN parameter_type_list RPAREN
                                     | direct_xxx_declarator LPAREN identifier_list_opt RPAREN
         """
-        func = c_ast.FuncDecl(
+        func = cfg.FuncDecl(
             args=p[3],
             type=None,
             coord=p[1].coord)
@@ -1262,7 +1262,7 @@ class CParser(PLYParser):
         if self._get_yacc_lookahead_token().type == "LBRACE":
             if func.args is not None:
                 for param in func.args.params:
-                    if isinstance(param, c_ast.EllipsisParam): break
+                    if isinstance(param, cfg.EllipsisParam): break
                     self._add_identifier(param.name, param.coord)
 
         p[0] = self._type_modify_decl(decl=p[1], modifier=func)
@@ -1287,7 +1287,7 @@ class CParser(PLYParser):
         #
         # So when we construct PtrDecl nestings, the leftmost pointer goes in
         # as the most nested type.
-        nested_type = c_ast.PtrDecl(quals=p[2] or [], type=None, coord=coord)
+        nested_type = cfg.PtrDecl(quals=p[2] or [], type=None, coord=coord)
         if len(p) > 3:
             tail_type = p[3]
             while tail_type.type is not None:
@@ -1308,7 +1308,7 @@ class CParser(PLYParser):
                                 | parameter_list COMMA ELLIPSIS
         """
         if len(p) > 2:
-            p[1].params.append(c_ast.EllipsisParam(self._token_coord(p, 3)))
+            p[1].params.append(cfg.EllipsisParam(self._token_coord(p, 3)))
 
         p[0] = p[1]
 
@@ -1317,7 +1317,7 @@ class CParser(PLYParser):
                             | parameter_list COMMA parameter_declaration
         """
         if len(p) == 2: # single parameter
-            p[0] = c_ast.ParamList([p[1]], p[1].coord)
+            p[0] = cfg.ParamList([p[1]], p[1].coord)
         else:
             p[1].params.append(p[3])
             p[0] = p[1]
@@ -1338,7 +1338,7 @@ class CParser(PLYParser):
         """
         spec = p[1]
         if not spec['type']:
-            spec['type'] = [c_ast.IdentifierType(['int'],
+            spec['type'] = [cfg.IdentifierType(['int'],
                 coord=self._token_coord(p, 1))]
         p[0] = self._build_declarations(
             spec=spec,
@@ -1349,7 +1349,7 @@ class CParser(PLYParser):
         """
         spec = p[1]
         if not spec['type']:
-            spec['type'] = [c_ast.IdentifierType(['int'],
+            spec['type'] = [cfg.IdentifierType(['int'],
                 coord=self._token_coord(p, 1))]
 
         # Parameters can have the same names as typedefs.  The trouble is that
@@ -1365,11 +1365,11 @@ class CParser(PLYParser):
         # This truly is an old-style parameter declaration
         #
         else:
-            decl = c_ast.Typename(
+            decl = cfg.Typename(
                 name='',
                 quals=spec['qual'],
                 align=None,
-                type=p[2] or c_ast.TypeDecl(None, None, None, None),
+                type=p[2] or cfg.TypeDecl(None, None, None, None),
                 coord=self._token_coord(p, 2))
             typename = spec['type']
             decl = self._fix_decl_name_type(decl, typename)
@@ -1381,7 +1381,7 @@ class CParser(PLYParser):
                             | identifier_list COMMA identifier
         """
         if len(p) == 2: # single parameter
-            p[0] = c_ast.ParamList([p[1]], p[1].coord)
+            p[0] = cfg.ParamList([p[1]], p[1].coord)
         else:
             p[1].params.append(p[3])
             p[0] = p[1]
@@ -1396,7 +1396,7 @@ class CParser(PLYParser):
                         | brace_open initializer_list COMMA brace_close
         """
         if p[2] is None:
-            p[0] = c_ast.InitList([], self._token_coord(p, 1))
+            p[0] = cfg.InitList([], self._token_coord(p, 1))
         else:
             p[0] = p[2]
 
@@ -1405,10 +1405,10 @@ class CParser(PLYParser):
                                 | initializer_list COMMA designation_opt initializer
         """
         if len(p) == 3: # single initializer
-            init = p[2] if p[1] is None else c_ast.NamedInitializer(p[1], p[2])
-            p[0] = c_ast.InitList([init], p[2].coord)
+            init = p[2] if p[1] is None else cfg.NamedInitializer(p[1], p[2])
+            p[0] = cfg.InitList([init], p[2].coord)
         else:
-            init = p[4] if p[3] is None else c_ast.NamedInitializer(p[3], p[4])
+            init = p[4] if p[3] is None else cfg.NamedInitializer(p[3], p[4])
             p[1].exprs.append(init)
             p[0] = p[1]
 
@@ -1435,11 +1435,11 @@ class CParser(PLYParser):
     def p_type_name(self, p):
         """ type_name   : specifier_qualifier_list abstract_declarator_opt
         """
-        typename = c_ast.Typename(
+        typename = cfg.Typename(
             name='',
             quals=p[1]['qual'][:],
             align=None,
-            type=p[2] or c_ast.TypeDecl(None, None, None, None),
+            type=p[2] or cfg.TypeDecl(None, None, None, None),
             coord=self._token_coord(p, 2))
 
         p[0] = self._fix_decl_name_type(typename, p[1]['type'])
@@ -1447,7 +1447,7 @@ class CParser(PLYParser):
     def p_abstract_declarator_1(self, p):
         """ abstract_declarator     : pointer
         """
-        dummytype = c_ast.TypeDecl(None, None, None, None)
+        dummytype = cfg.TypeDecl(None, None, None, None)
         p[0] = self._type_modify_decl(
             decl=dummytype,
             modifier=p[1])
@@ -1474,7 +1474,7 @@ class CParser(PLYParser):
     def p_direct_abstract_declarator_2(self, p):
         """ direct_abstract_declarator  : direct_abstract_declarator LBRACKET assignment_expression_opt RBRACKET
         """
-        arr = c_ast.ArrayDecl(
+        arr = cfg.ArrayDecl(
             type=None,
             dim=p[3],
             dim_quals=[],
@@ -1486,8 +1486,8 @@ class CParser(PLYParser):
         """ direct_abstract_declarator  : LBRACKET type_qualifier_list_opt assignment_expression_opt RBRACKET
         """
         quals = (p[2] if len(p) > 4 else []) or []
-        p[0] = c_ast.ArrayDecl(
-            type=c_ast.TypeDecl(None, None, None, None),
+        p[0] = cfg.ArrayDecl(
+            type=cfg.TypeDecl(None, None, None, None),
             dim=p[3] if len(p) > 4 else p[2],
             dim_quals=quals,
             coord=self._token_coord(p, 1))
@@ -1495,9 +1495,9 @@ class CParser(PLYParser):
     def p_direct_abstract_declarator_4(self, p):
         """ direct_abstract_declarator  : direct_abstract_declarator LBRACKET TIMES RBRACKET
         """
-        arr = c_ast.ArrayDecl(
+        arr = cfg.ArrayDecl(
             type=None,
-            dim=c_ast.ID(p[3], self._token_coord(p, 3)),
+            dim=cfg.ID(p[3], self._token_coord(p, 3)),
             dim_quals=[],
             coord=p[1].coord)
 
@@ -1506,16 +1506,16 @@ class CParser(PLYParser):
     def p_direct_abstract_declarator_5(self, p):
         """ direct_abstract_declarator  : LBRACKET TIMES RBRACKET
         """
-        p[0] = c_ast.ArrayDecl(
-            type=c_ast.TypeDecl(None, None, None, None),
-            dim=c_ast.ID(p[3], self._token_coord(p, 3)),
+        p[0] = cfg.ArrayDecl(
+            type=cfg.TypeDecl(None, None, None, None),
+            dim=cfg.ID(p[3], self._token_coord(p, 3)),
             dim_quals=[],
             coord=self._token_coord(p, 1))
 
     def p_direct_abstract_declarator_6(self, p):
         """ direct_abstract_declarator  : direct_abstract_declarator LPAREN parameter_type_list_opt RPAREN
         """
-        func = c_ast.FuncDecl(
+        func = cfg.FuncDecl(
             args=p[3],
             type=None,
             coord=p[1].coord)
@@ -1525,9 +1525,9 @@ class CParser(PLYParser):
     def p_direct_abstract_declarator_7(self, p):
         """ direct_abstract_declarator  : LPAREN parameter_type_list_opt RPAREN
         """
-        p[0] = c_ast.FuncDecl(
+        p[0] = cfg.FuncDecl(
             args=p[2],
-            type=c_ast.TypeDecl(None, None, None, None),
+            type=cfg.TypeDecl(None, None, None, None),
             coord=self._token_coord(p, 1))
 
     # declaration is a list, statement isn't. To make it consistent, block_item
@@ -1550,74 +1550,74 @@ class CParser(PLYParser):
 
     def p_compound_statement_1(self, p):
         """ compound_statement : brace_open block_item_list_opt brace_close """
-        p[0] = c_ast.Compound(
+        p[0] = cfg.Compound(
             block_items=p[2],
             coord=self._token_coord(p, 1))
 
     def p_labeled_statement_1(self, p):
         """ labeled_statement : ID COLON pragmacomp_or_statement """
-        p[0] = c_ast.Label(p[1], p[3], self._token_coord(p, 1))
+        p[0] = cfg.Label(p[1], p[3], self._token_coord(p, 1))
 
     def p_labeled_statement_2(self, p):
         """ labeled_statement : CASE constant_expression COLON pragmacomp_or_statement """
-        p[0] = c_ast.Case(p[2], [p[4]], self._token_coord(p, 1))
+        p[0] = cfg.Case(p[2], [p[4]], self._token_coord(p, 1))
 
     def p_labeled_statement_3(self, p):
         """ labeled_statement : DEFAULT COLON pragmacomp_or_statement """
-        p[0] = c_ast.Default([p[3]], self._token_coord(p, 1))
+        p[0] = cfg.Default([p[3]], self._token_coord(p, 1))
 
     def p_selection_statement_1(self, p):
         """ selection_statement : IF LPAREN expression RPAREN pragmacomp_or_statement """
-        p[0] = c_ast.If(p[3], p[5], None, self._token_coord(p, 1))
+        p[0] = cfg.If(p[3], p[5], None, self._token_coord(p, 1))
 
     def p_selection_statement_2(self, p):
         """ selection_statement : IF LPAREN expression RPAREN statement ELSE pragmacomp_or_statement """
-        p[0] = c_ast.If(p[3], p[5], p[7], self._token_coord(p, 1))
+        p[0] = cfg.If(p[3], p[5], p[7], self._token_coord(p, 1))
 
     def p_selection_statement_3(self, p):
         """ selection_statement : SWITCH LPAREN expression RPAREN pragmacomp_or_statement """
         p[0] = fix_switch_cases(
-                c_ast.Switch(p[3], p[5], self._token_coord(p, 1)))
+                cfg.Switch(p[3], p[5], self._token_coord(p, 1)))
 
     def p_iteration_statement_1(self, p):
         """ iteration_statement : WHILE LPAREN expression RPAREN pragmacomp_or_statement """
-        p[0] = c_ast.While(p[3], p[5], self._token_coord(p, 1))
+        p[0] = cfg.While(p[3], p[5], self._token_coord(p, 1))
 
     def p_iteration_statement_2(self, p):
         """ iteration_statement : DO pragmacomp_or_statement WHILE LPAREN expression RPAREN SEMI """
-        p[0] = c_ast.DoWhile(p[5], p[2], self._token_coord(p, 1))
+        p[0] = cfg.DoWhile(p[5], p[2], self._token_coord(p, 1))
 
     def p_iteration_statement_3(self, p):
         """ iteration_statement : FOR LPAREN expression_opt SEMI expression_opt SEMI expression_opt RPAREN pragmacomp_or_statement """
-        p[0] = c_ast.For(p[3], p[5], p[7], p[9], self._token_coord(p, 1))
+        p[0] = cfg.For(p[3], p[5], p[7], p[9], self._token_coord(p, 1))
 
     def p_iteration_statement_4(self, p):
         """ iteration_statement : FOR LPAREN declaration expression_opt SEMI expression_opt RPAREN pragmacomp_or_statement """
-        p[0] = c_ast.For(c_ast.DeclList(p[3], self._token_coord(p, 1)),
+        p[0] = cfg.For(cfg.DeclList(p[3], self._token_coord(p, 1)),
                          p[4], p[6], p[8], self._token_coord(p, 1))
 
     def p_jump_statement_1(self, p):
         """ jump_statement  : GOTO ID SEMI """
-        p[0] = c_ast.Goto(p[2], self._token_coord(p, 1))
+        p[0] = cfg.Goto(p[2], self._token_coord(p, 1))
 
     def p_jump_statement_2(self, p):
         """ jump_statement  : BREAK SEMI """
-        p[0] = c_ast.Break(self._token_coord(p, 1))
+        p[0] = cfg.Break(self._token_coord(p, 1))
 
     def p_jump_statement_3(self, p):
         """ jump_statement  : CONTINUE SEMI """
-        p[0] = c_ast.Continue(self._token_coord(p, 1))
+        p[0] = cfg.Continue(self._token_coord(p, 1))
 
     def p_jump_statement_4(self, p):
         """ jump_statement  : RETURN expression SEMI
                             | RETURN SEMI
         """
-        p[0] = c_ast.Return(p[2] if len(p) == 4 else None, self._token_coord(p, 1))
+        p[0] = cfg.Return(p[2] if len(p) == 4 else None, self._token_coord(p, 1))
 
     def p_expression_statement(self, p):
         """ expression_statement : expression_opt SEMI """
         if p[1] is None:
-            p[0] = c_ast.EmptyStatement(self._token_coord(p, 2))
+            p[0] = cfg.EmptyStatement(self._token_coord(p, 2))
         else:
             p[0] = p[1]
 
@@ -1628,8 +1628,8 @@ class CParser(PLYParser):
         if len(p) == 2:
             p[0] = p[1]
         else:
-            if not isinstance(p[1], c_ast.ExprList):
-                p[1] = c_ast.ExprList([p[1]], p[1].coord)
+            if not isinstance(p[1], cfg.ExprList):
+                p[1] = cfg.ExprList([p[1]], p[1].coord)
 
             p[1].exprs.append(p[3])
             p[0] = p[1]
@@ -1640,7 +1640,7 @@ class CParser(PLYParser):
 
     def p_typedef_name(self, p):
         """ typedef_name : TYPEID """
-        p[0] = c_ast.IdentifierType([p[1]], coord=self._token_coord(p, 1))
+        p[0] = cfg.IdentifierType([p[1]], coord=self._token_coord(p, 1))
 
     def p_assignment_expression(self, p):
         """ assignment_expression   : conditional_expression
@@ -1649,7 +1649,7 @@ class CParser(PLYParser):
         if len(p) == 2:
             p[0] = p[1]
         else:
-            p[0] = c_ast.Assignment(p[2], p[1], p[3], p[1].coord)
+            p[0] = cfg.Assignment(p[2], p[1], p[3], p[1].coord)
 
     # K&R2 defines these as many separate rules, to encode
     # precedence and associativity. Why work hard ? I'll just use
@@ -1682,7 +1682,7 @@ class CParser(PLYParser):
         if len(p) == 2:
             p[0] = p[1]
         else:
-            p[0] = c_ast.TernaryOp(p[1], p[3], p[5], p[1].coord)
+            p[0] = cfg.TernaryOp(p[1], p[3], p[5], p[1].coord)
 
     def p_binary_expression(self, p):
         """ binary_expression   : cast_expression
@@ -1708,7 +1708,7 @@ class CParser(PLYParser):
         if len(p) == 2:
             p[0] = p[1]
         else:
-            p[0] = c_ast.BinaryOp(p[2], p[1], p[3], p[1].coord)
+            p[0] = cfg.BinaryOp(p[2], p[1], p[3], p[1].coord)
 
     def p_cast_expression_1(self, p):
         """ cast_expression : unary_expression """
@@ -1716,7 +1716,7 @@ class CParser(PLYParser):
 
     def p_cast_expression_2(self, p):
         """ cast_expression : LPAREN type_name RPAREN cast_expression """
-        p[0] = c_ast.Cast(p[2], p[4], self._token_coord(p, 1))
+        p[0] = cfg.Cast(p[2], p[4], self._token_coord(p, 1))
 
     def p_unary_expression_1(self, p):
         """ unary_expression    : postfix_expression """
@@ -1727,14 +1727,14 @@ class CParser(PLYParser):
                                 | MINUSMINUS unary_expression
                                 | unary_operator cast_expression
         """
-        p[0] = c_ast.UnaryOp(p[1], p[2], p[2].coord)
+        p[0] = cfg.UnaryOp(p[1], p[2], p[2].coord)
 
     def p_unary_expression_3(self, p):
         """ unary_expression    : SIZEOF unary_expression
                                 | SIZEOF LPAREN type_name RPAREN
                                 | _ALIGNOF LPAREN type_name RPAREN
         """
-        p[0] = c_ast.UnaryOp(
+        p[0] = cfg.UnaryOp(
             p[1],
             p[2] if len(p) == 3 else p[3],
             self._token_coord(p, 1))
@@ -1755,13 +1755,13 @@ class CParser(PLYParser):
 
     def p_postfix_expression_2(self, p):
         """ postfix_expression  : postfix_expression LBRACKET expression RBRACKET """
-        p[0] = c_ast.ArrayRef(p[1], p[3], p[1].coord)
+        p[0] = cfg.ArrayRef(p[1], p[3], p[1].coord)
 
     def p_postfix_expression_3(self, p):
         """ postfix_expression  : postfix_expression LPAREN argument_expression_list RPAREN
                                 | postfix_expression LPAREN RPAREN
         """
-        p[0] = c_ast.FuncCall(p[1], p[3] if len(p) == 5 else None, p[1].coord)
+        p[0] = cfg.FuncCall(p[1], p[3] if len(p) == 5 else None, p[1].coord)
 
     def p_postfix_expression_4(self, p):
         """ postfix_expression  : postfix_expression PERIOD ID
@@ -1769,20 +1769,20 @@ class CParser(PLYParser):
                                 | postfix_expression ARROW ID
                                 | postfix_expression ARROW TYPEID
         """
-        field = c_ast.ID(p[3], self._token_coord(p, 3))
-        p[0] = c_ast.StructRef(p[1], p[2], field, p[1].coord)
+        field = cfg.ID(p[3], self._token_coord(p, 3))
+        p[0] = cfg.StructRef(p[1], p[2], field, p[1].coord)
 
     def p_postfix_expression_5(self, p):
         """ postfix_expression  : postfix_expression PLUSPLUS
                                 | postfix_expression MINUSMINUS
         """
-        p[0] = c_ast.UnaryOp('p' + p[2], p[1], p[1].coord)
+        p[0] = cfg.UnaryOp('p' + p[2], p[1], p[1].coord)
 
     def p_postfix_expression_6(self, p):
         """ postfix_expression  : LPAREN type_name RPAREN brace_open initializer_list brace_close
                                 | LPAREN type_name RPAREN brace_open initializer_list COMMA brace_close
         """
-        p[0] = c_ast.CompoundLiteral(p[2], p[5])
+        p[0] = cfg.CompoundLiteral(p[2], p[5])
 
     def p_primary_expression_1(self, p):
         """ primary_expression  : identifier """
@@ -1806,8 +1806,8 @@ class CParser(PLYParser):
         """ primary_expression  : OFFSETOF LPAREN type_name COMMA offsetof_member_designator RPAREN
         """
         coord = self._token_coord(p, 1)
-        p[0] = c_ast.FuncCall(c_ast.ID(p[1], coord),
-                              c_ast.ExprList([p[3], p[5]], coord),
+        p[0] = cfg.FuncCall(cfg.ID(p[1], coord),
+                              cfg.ExprList([p[3], p[5]], coord),
                               coord)
 
     def p_offsetof_member_designator(self, p):
@@ -1818,9 +1818,9 @@ class CParser(PLYParser):
         if len(p) == 2:
             p[0] = p[1]
         elif len(p) == 4:
-            p[0] = c_ast.StructRef(p[1], p[2], p[3], p[1].coord)
+            p[0] = cfg.StructRef(p[1], p[2], p[3], p[1].coord)
         elif len(p) == 5:
-            p[0] = c_ast.ArrayRef(p[1], p[3], p[1].coord)
+            p[0] = cfg.ArrayRef(p[1], p[3], p[1].coord)
         else:
             raise NotImplementedError("Unexpected parsing state. len(p): %u" % len(p))
 
@@ -1829,14 +1829,14 @@ class CParser(PLYParser):
                                         | argument_expression_list COMMA assignment_expression
         """
         if len(p) == 2: # single expr
-            p[0] = c_ast.ExprList([p[1]], p[1].coord)
+            p[0] = cfg.ExprList([p[1]], p[1].coord)
         else:
             p[1].exprs.append(p[3])
             p[0] = p[1]
 
     def p_identifier(self, p):
         """ identifier  : ID """
-        p[0] = c_ast.ID(p[1], self._token_coord(p, 1))
+        p[0] = cfg.ID(p[1], self._token_coord(p, 1))
 
     def p_constant_1(self, p):
         """ constant    : INT_CONST_DEC
@@ -1858,7 +1858,7 @@ class CParser(PLYParser):
         elif lCount > 2:
              raise ValueError('Constant cannot have more than two l/L suffix.')
         prefix = 'unsigned ' * uCount + 'long ' * lCount
-        p[0] = c_ast.Constant(
+        p[0] = cfg.Constant(
             prefix + 'int', p[1], self._token_coord(p, 1))
 
     def p_constant_2(self, p):
@@ -1875,7 +1875,7 @@ class CParser(PLYParser):
             else:
                 t = 'double'
 
-        p[0] = c_ast.Constant(
+        p[0] = cfg.Constant(
             t, p[1], self._token_coord(p, 1))
 
     def p_constant_3(self, p):
@@ -1885,7 +1885,7 @@ class CParser(PLYParser):
                         | U16CHAR_CONST
                         | U32CHAR_CONST
         """
-        p[0] = c_ast.Constant(
+        p[0] = cfg.Constant(
             'char', p[1], self._token_coord(p, 1))
 
     # The "unified" string and wstring literal rules are for supporting
@@ -1898,7 +1898,7 @@ class CParser(PLYParser):
                                     | unified_string_literal STRING_LITERAL
         """
         if len(p) == 2: # single literal
-            p[0] = c_ast.Constant(
+            p[0] = cfg.Constant(
                 'string', p[1], self._token_coord(p, 1))
         else:
             p[1].value = p[1].value[:-1] + p[2][1:]
@@ -1915,7 +1915,7 @@ class CParser(PLYParser):
                                     | unified_wstring_literal U32STRING_LITERAL
         """
         if len(p) == 2: # single literal
-            p[0] = c_ast.Constant(
+            p[0] = cfg.Constant(
                 'string', p[1], self._token_coord(p, 1))
         else:
             p[1].value = p[1].value.rstrip()[:-1] + p[2][2:]

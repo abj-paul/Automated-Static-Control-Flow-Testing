@@ -1,12 +1,12 @@
 from pycparser import CParser
-from CFG_C import c_ast
+from backend.CFG_C import cfg
 import sys
 
 parser = CParser()
 c_keywords = ["auto", "break", "case", "char", "const", "continue", "default", "do", "double", "else", "enum", "extern", "float", "for", "goto", "if", "int", "long", "register", "return", "short", "signed", "sizeof", "static", "struct", "switch", "typedef", "union", "unsigned", "void", "volatile", "while","printf", "scanf"
 ]
 # Define a visitor class to traverse the AST and collect variable names
-class VariableVisitor(c_ast.NodeVisitor):
+class VariableVisitor(cfg.NodeVisitor):
     def __init__(self):
         self.variables = set()
 
