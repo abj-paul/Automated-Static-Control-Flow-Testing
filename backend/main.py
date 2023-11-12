@@ -51,8 +51,8 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
         "smell": get_variable_cases(code_link)
     }
 
-    with open(f'../graph-visualization/public/{hash(code_link)}.json', 'w') as f:
-        json.dump(result, f)
+    # with open(f'../graph-visualization/public/{hash(code_link)}.json', 'w') as f:
+    #     json.dump(result, f)
     # file = open(f'../graph-visualization/public/{hash(code_link)}.json', 'w') 
     # file.write(str(result))
     # file.close() 
@@ -98,7 +98,8 @@ async def generate_AST_from_project_url(code_url: ASTRequest):
         "smell": smells
     }
     #print(generate_report(results))
-
+    with open(f'../graph-visualization/public/{hash(project_path)}.json', 'w') as f:
+        json.dump(results, f)
 
     return results
 
