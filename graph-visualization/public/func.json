@@ -1,0 +1,134 @@
+{
+	"functions": [
+		"int main() {\n    int x = 10;\n    int y = 5;\n\n    if (x > 5) {\n        y = 10;\n    } else if (x < 5) {\n        y = 20;\n    } else {\n        y = 30;\n    }\n\n    while (x > 0) {\n        x--;\n    }\n\n    return 0;\n}"
+	],
+	"asts": [
+		{
+            "_nodetype": "FileAST",
+            "coord": null,
+            "ext": [
+                {
+                    "_nodetype": "FuncDef",
+                    "body": {
+                        "_nodetype": "Compound",
+                        "block_items": null,
+                        "coord": "test.c:1:1"
+                    },
+                    "coord": "test.c:1:5",
+                    "decl": {
+                        "_nodetype": "Decl",
+                        "align": [],
+                        "bitsize": null,
+                        "coord": "test.c:1:5",
+                        "funcspec": [],
+                        "init": null,
+                        "name": "foo",
+                        "quals": [],
+                        "storage": [],
+                        "type": {
+                            "_nodetype": "FuncDecl",
+                            "args": null,
+                            "coord": "test.c:1:5",
+                            "type": {
+                                "_nodetype": "TypeDecl",
+                                "align": null,
+                                "coord": "test.c:1:5",
+                                "declname": "foo",
+                                "quals": [],
+                                "type": {
+                                    "_nodetype": "IdentifierType",
+                                    "coord": "test.c:1:1",
+                                    "names": [
+                                        "int"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "param_decls": null
+                },
+                {
+                    "_nodetype": "FuncDef",
+                    "body": {
+                        "_nodetype": "Compound",
+                        "block_items": [
+                            {
+                                "_nodetype": "FuncCall",
+                                "args": null,
+                                "coord": "test.c:4:3",
+                                "name": {
+                                    "_nodetype": "ID",
+                                    "coord": "test.c:4:3",
+                                    "name": "foo"
+                                }
+                            },
+                            {
+                                "_nodetype": "Return",
+                                "coord": "test.c:5:3",
+                                "expr": {
+                                    "_nodetype": "Constant",
+                                    "coord": "test.c:5:10",
+                                    "type": "int",
+                                    "value": "0"
+                                }
+                            }
+                        ],
+                        "coord": "test.c:3:1"
+                    },
+                    "coord": "test.c:3:5",
+                    "decl": {
+                        "_nodetype": "Decl",
+                        "align": [],
+                        "bitsize": null,
+                        "coord": "test.c:3:5",
+                        "funcspec": [],
+                        "init": null,
+                        "name": "main",
+                        "quals": [],
+                        "storage": [],
+                        "type": {
+                            "_nodetype": "FuncDecl",
+                            "args": null,
+                            "coord": "test.c:3:5",
+                            "type": {
+                                "_nodetype": "TypeDecl",
+                                "align": null,
+                                "coord": "test.c:3:5",
+                                "declname": "main",
+                                "quals": [],
+                                "type": {
+                                    "_nodetype": "IdentifierType",
+                                    "coord": "test.c:3:1",
+                                    "names": [
+                                        "int"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "param_decls": null
+                }
+            ]
+        }
+	],
+	"metrics": {
+		"NumberOfFunctions": 1,
+		"NumberOfVariables": 0,
+		"NumberOfStatements": 0,
+		"FunctionMetrics": [
+			{
+				"FunctionName": "main",
+				"CyclomaticComplexity": 1,
+				"NumberOfStatements": 5,
+				"NumberOfVariables": 3
+			}
+		]
+	},
+	"variables": [
+		[
+			"x",
+			"y"
+		]
+	],
+	"smell": []
+}

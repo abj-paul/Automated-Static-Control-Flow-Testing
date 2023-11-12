@@ -31,12 +31,12 @@ const TableComponent = ({ table, index }) => (
   </div>
 );
 
-const FunctionDetailsComponent = ({ functionName, data }) => (
-  <div className="card function-details-card" style={{ marginBottom: '20px' }}>
+const FunctionDetailsComponent = ({ functionName, data, index }) => (
+  <div key={index} className="card function-details-card" style={{ marginBottom: '20px' }}>
     <div className="card-body">
       <p>{functionName}</p>
-      {data.map((table, index) => (
-        <TableComponent key={index} table={table} index={index} />
+      {data && data.map((table, tableIndex) => (
+        <TableComponent key={tableIndex} table={table} index={tableIndex} />
       ))}
     </div>
   </div>
@@ -44,18 +44,14 @@ const FunctionDetailsComponent = ({ functionName, data }) => (
 
 const HandleFileComponent = ({ functionData }) => {
   console.log(functionData);
-  if (!functionData) {
+  if (!functionData || functionData.functions.length === 0) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="container mt-4 data-flow-container">
-      {functionData.map((item, index) => (
-        <FunctionDetailsComponent
-          key={index}
-          functionName={item.functions.join('\n')} // Join the array of functions into a string
-          data={item.data_flow_tables}
-        />
+      {functionData.functions.map((func, index) => (
+        <FunctionDetailsComponent key={index} functionName={func} data={functionData.data_flow_tables[index]} index={index} />
       ))}
     </div>
   );
