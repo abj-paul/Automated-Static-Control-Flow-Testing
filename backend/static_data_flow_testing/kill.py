@@ -52,21 +52,21 @@ def find_where_scope_ends_given_definition_loc(c_code, variable_definition_loc):
     closing_bracket_loc = _find_closing_bracket(c_code, opening_bracket_loc)
     return closing_bracket_loc
 
-c_code = """
-void main() {
-    int x = 10;
-    int y = 0;
-    if (x > 0) {
-        y = x - 1;
-        while (x > 5) {
-            y = x - 2;
-            x--;
-        }
-    } else {
-        x = y + 1;
-    }
-    anotherFunction();
-    return 0;
-}
-"""
-print(f"Expected = {15} \nFound = {find_where_scope_ends_given_definition_loc(c_code, 3)}")
+# c_code = """
+# void main() {
+#     int x = 10;
+#     int y = 0;
+#     if (x > 0) {
+#         y = x - 1;
+#         while (x > 5) {
+#             y = x - 2;
+#             x--;
+#         }
+#     } else {
+#         x = y + 1;
+#     }
+#     anotherFunction();
+#     return 0;
+# }
+# """
+# print(f"Expected = {15} \nFound = {find_where_scope_ends_given_definition_loc(c_code, 3)}")
