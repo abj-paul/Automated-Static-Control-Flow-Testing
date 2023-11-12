@@ -1,12 +1,14 @@
 void main() {
     int x = 10;
+    int y = 0;
     if (x > 0) {
-        x = x - 1;
+        y = x - 1;
         while (x > 5) {
-            x = x - 2;
+            y = x - 2;
+            x--;
         }
     } else {
-        x = x + 1;
+        x = y + 1;
     }
     anotherFunction();
     return 0;
