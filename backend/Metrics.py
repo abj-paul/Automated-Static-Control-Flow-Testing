@@ -1,4 +1,5 @@
-from pycparser import CParser
+# from pycparser import CParser
+from CFG_C import CParser
 from CFG_C import c_ast
 
 class MetricVisitor(c_ast.NodeVisitor):

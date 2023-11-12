@@ -8,8 +8,8 @@
 #------------------------------------------------------------------------------
 import re
 
-from ply import lex
-from ply.lex import TOKEN
+from pycparser.ply import lex
+from pycparser.ply.lex import TOKEN
 
 
 class CLexer(object):

@@ -1,4 +1,5 @@
-from pycparser import c_parser
+# from pycparser import c_parser/
+from CFG_C import c_parser
 from CFG_C import c_ast
 
 class VariableNameVisitor(c_ast.NodeVisitor):
