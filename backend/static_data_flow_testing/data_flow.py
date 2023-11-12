@@ -6,28 +6,52 @@ def detect_data_flow_anomalies(c_code):
     # Regular expressions to match variable definitions, kills, and uses
     definition_pattern = re.compile(r'(\b\w+\b)\s*=\s*.*;')
     kill_pattern = re.compile(r'(\b\w+\b)\s*=\s*.*\(.*\);')  # Assuming kills involve function calls
-    use_pattern = re.compile(r'(\b\w+\b)\s*=\s*.*?(?=[;,])')  # Updated use_pattern
 
     # Extract variable definitions, kills, and uses with line numbers
     lines = c_code.split('\n')
-    definitions = [(match.group(1), match.group(), i+1) for i, line in enumerate(lines) for match in definition_pattern.finditer(line)]
+    definitions = [(match.group(1), match.group(), i) for i, line in enumerate(lines) for match in definition_pattern.finditer(line)]
     kills = [(match.group(1), match.group(), i+1) for i, line in enumerate(lines) for match in kill_pattern.finditer(line)]
     uses = []
     for variable, _, _ in definitions:
-        uses.extend(find_variable_usage(c_code, variable))
+        uses.extend(find_variable_usage(lines, variable))
 
     print(f"DEbug: D={definitions}")
     print(f"DEbug: U={uses}")
     print(f"DEbug: K={kills}")
 
     # Detect data-flow anomalies
-    anomalies = set()
-    for variable, line, lineno in definitions:
-        if variable in [var for var, _, _ in kills]:
-            anomalies.add((variable, 'dk', lineno))
-        if variable in [var for var, _, _ in uses]:
-            anomalies.add((variable, 'dd', lineno))
-
+    anomalies = []
+    for variable1, line1, lineno1 in definitions:
+        for variable2, line2, lineno2 in definitions:
+            if variable1==variable2 and lineno1<lineno2:
+                anomalies.append({
+                    "variable": variable1,
+                    "data_flow_pattern": 'dd',
+                    "lines": (lineno1, lineno2),
+                    "first_line": line1,
+                    "second_line": line2
+                    })
+                break
+        for variable2, line2, lineno2 in uses:
+            if variable1==variable2 and lineno1<lineno2:
+                anomalies.append({
+                    "variable": variable1,
+                    "data_flow_pattern": 'du',
+                    "lines": (lineno1, lineno2),
+                    "first_line": line1,
+                    "second_line": line2
+                    })
+                break
+        for variable2, line2, lineno2 in kills:
+            if variable1==variable2 and lineno1<lineno2:
+                anomalies.append({
+                    "variable": variable1,
+                    "data_flow_pattern": 'dk',
+                    "lines": (lineno1, lineno2),
+                    "first_line": line1,
+                    "second_line": line2
+                    })
+                break
     return anomalies
 
 # Example C function
@@ -49,4 +73,5 @@ void example_function() {
 
 data_flow_anomalies = detect_data_flow_anomalies(c_function)
 
-print(f"Debug: anomalies = {data_flow_anomalies}")
+for anomaly in data_flow_anomalies:
+    print(f"{anomaly['variable']} | {anomaly['data_flow_pattern']} | {anomaly['lines']}")

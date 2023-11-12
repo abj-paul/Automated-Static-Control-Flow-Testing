@@ -1,8 +1,7 @@
 import re
 from tokenizer_statement import tokenize
 
-def find_variable_usage(code, variable):
-    lines = code.split('\n')
+def find_variable_usage(lines, variable):
     result = []
 
     for loc,line in enumerate(lines):
