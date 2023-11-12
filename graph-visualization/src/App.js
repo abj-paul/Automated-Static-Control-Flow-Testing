@@ -24,8 +24,28 @@ function App() {
         setFunctionData(data.functions);
       }
     }
+    const apiUrl = 'http://localhost:8000/api/v1/code/file';
 
-    fetch('/func.json')
+    const requestData = {
+      code_url: './project-to-test/paths.c'
+    };
+    
+    fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Add any other headers if needed
+      },
+      body: JSON.stringify(requestData),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        fetch(data)
       .then((response) => response.json())
       .then((data) => {
         extractdata(data);
@@ -54,6 +74,12 @@ function App() {
       </div>
     </div>
   );
+        console.log(data);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    
 }
 
 export default App;

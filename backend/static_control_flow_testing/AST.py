@@ -131,6 +131,11 @@ import json
 def generate_ast_and_get_json(c_function_code):
     ast = parser.parse(c_function_code)
     json_form = to_json(ast, sort_keys=True, indent=4)
-    return json_form
-    #return f'temp/{hash(c_function_code)}.json'
+    #with open(f'../graph-visualization/public/{hash(c_function_code)}.json', 'w') as f:
+        #json.dump(json_form, f)
+    #return json_form
+    file = open(f'../graph-visualization/public/{hash(c_function_code)}.json', 'w') 
+    file.write(str(json_form))
+    file.close() 
+    return f'/{hash(c_function_code)}.json'
 

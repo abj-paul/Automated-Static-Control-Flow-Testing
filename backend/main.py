@@ -53,11 +53,11 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
 
     # with open(f'../graph-visualization/public/{hash(code_link)}.json', 'w') as f:
     #     json.dump(result, f)
-    file = open(f'../graph-visualization/public/{hash(code_link)}.json', 'w') 
-    file.write(result) 
-    file.close() 
+    # file = open(f'../graph-visualization/public/{hash(code_link)}.json', 'w') 
+    # file.write(str(result))
+    # file.close() 
 
-    return f'../graph-visualization/public/{hash(code_link)}.json'
+    return result
 
 @app.post("/api/v1/code/project")
 async def generate_AST_from_project_url(code_url: ASTRequest):
