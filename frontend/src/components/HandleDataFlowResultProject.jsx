@@ -3,18 +3,7 @@ import React from 'react';
 import './Result.css';
 
 const TableComponent = ({ table, index }) => {
-  // Check if table is an array
-  if (!Array.isArray(table)) {
-    // Handle the case where table is not an array
-    return (
-      <div key={index} className="card table-card" style={{ position: 'relative', marginBottom: '20px' }}>
-        <div className="card-body">
-          <h5>Table {index + 1}</h5>
-          <p>Error: Invalid table data</p>
-        </div><br /><br />
-      </div>
-    );
-  }
+  console.log(table);
 
   return (
     <div key={index} className="card table-card" style={{ position: 'relative', marginBottom: '20px' }}>

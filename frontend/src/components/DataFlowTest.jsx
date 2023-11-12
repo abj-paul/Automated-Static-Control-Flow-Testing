@@ -4,20 +4,21 @@ import ManualFileInputComponent from './InputFile';
 import ProjectPathInputForm from './InputProject';
 import DataFlowComponentProject from './HandleDataFlowResultProject';
 import axios from 'axios';
-import { Modal, Button, Container } from 'react-bootstrap'; // Import react-bootstrap components
+import { Modal, Button, Container } from 'react-bootstrap';
+import HandleFileComponent from './HandleFileComponent';
 
 const DataFlowTest = () => {
   const [data, setData] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isFilePath, setIsFilePath] = useState(false); // Declare isFilePath state
 
   const handleManualFileSubmit = async (filePath) => {
     try {
-      console.log("ok");
       const apiUrl = 'http://127.0.0.1:8000/api/v1/dataflow/code/file';
       const response = await axios.post(apiUrl, { code_url: filePath });
 
       setData(response.data);
-      console.log(data);
+      setIsFilePath(true); // Set isFilePath to true for file path
       setShowModal(true);
     } catch (error) {
       console.error('Error fetching data flow:', error);
@@ -30,6 +31,7 @@ const DataFlowTest = () => {
       const response = await axios.post(apiUrl, { code_url: projectPath });
 
       setData(response.data);
+      setIsFilePath(false); // Set isFilePath to false for project path
       setShowModal(true);
     } catch (error) {
       console.error('Error fetching data flow:', error);
@@ -37,7 +39,8 @@ const DataFlowTest = () => {
   };
 
   const handleCloseModal = () => {
-    setShowModal(false); // Close the modal
+    setShowModal(false);
+    setIsFilePath(false); // Reset isFilePath when modal is closed
   };
 
   return (
@@ -52,22 +55,26 @@ const DataFlowTest = () => {
       </div>
       {data && (
         <div className="result-container">
-          <Modal show={showModal} onHide={handleCloseModal} size="lg">
-            <Modal.Header closeButton>
-              <Modal.Title>Data Flow Results</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              {/* Use Container component with fluid property to make it full-width */}
-              <Container fluid>
-                <DataFlowComponentProject functionData={data} />
-              </Container>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleCloseModal}>
-                Close
-              </Button>
-            </Modal.Footer>
-          </Modal>
+          {/* Check if the data source is a file path and send it to HandleFileComponent */}
+          {isFilePath ? (
+            <HandleFileComponent functionData={data} />
+          ) : (
+            <Modal show={showModal} onHide={handleCloseModal} size="lg">
+              <Modal.Header closeButton>
+                <Modal.Title>Data Flow Results</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Container fluid>
+                  <DataFlowComponentProject functionData={data} />
+                </Container>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseModal}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          )}
         </div>
       )}
     </div>

@@ -102,13 +102,13 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
     for function in functions:
         print(f"DEBUG: {function}")
         data_flow_tables.append(detect_data_flow_data_flow_table(function))
-        corresponding_filenames.append(code_url)
+        corresponding_filenames.append(code_link)
 
 
     return {
         "functions": functions,
         "filenames": corresponding_filenames,
-        "data_flow_tables": data_flow_tables
+        "data_flow_tables": [data_flow_tables]
     }
 @app.post("/api/v1/dataflow/code/project/")
 async def generate_AST_from_code_url(code_url: ASTRequest):
