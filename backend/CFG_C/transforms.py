@@ -7,7 +7,7 @@
 # License: BSD
 #------------------------------------------------------------------------------
 
-from . import cfg_node
+from backend.CFG_C import cfg_node
 
 
 def fix_switch_cases(switch_node):

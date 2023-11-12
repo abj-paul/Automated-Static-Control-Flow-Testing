@@ -8,8 +8,8 @@
 #------------------------------------------------------------------------------
 import re
 
-from ply import lex
-from ply.lex import TOKEN
+from backend.CFG_C.ply import lex
+from backend.CFG_C.ply.lex import TOKEN
 
 
 class CLexer(object):

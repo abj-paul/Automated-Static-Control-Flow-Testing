@@ -7,8 +7,8 @@
 # License: BSD
 #------------------------------------------------------------------------------
 
-from . import cfg_node
-from ply import yacc
+from backend.CFG_C import cfg_node
+from backend.CFG_C.ply import yacc
 from backend.CFG_C.lexer import CLexer
 from backend.CFG_C.PlyParser import PLYParser, ParseError, parameterized, template
 from backend.CFG_C.transforms import fix_switch_cases, fix_atomic_specifiers
