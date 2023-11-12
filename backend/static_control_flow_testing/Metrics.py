@@ -1,5 +1,5 @@
-from pycparser import CParser
 from backend.CFG_C import cfg_node
+from backend.CFG_C import parser
 
 class MetricVisitor(cfg_node.NodeVisitor):
     def __init__(self):
@@ -49,8 +49,8 @@ class MetricVisitor(cfg_node.NodeVisitor):
 def calculate_metrics(filename):
     with open(filename, 'r') as file:
         c_code = file.read()
-    parser = CParser()
-    ast = parser.parse(c_code)
+    myparser = parser.CParser()
+    ast = myparser.parse(c_code)
 
     metric_visitor = MetricVisitor()
     metric_visitor.visit(ast)

@@ -1,5 +1,5 @@
-from pycparser import CParser
 from backend.CFG_C import cfg_node
+from backend.CFG_C.parser import CParser
 import sys
 
 parser = CParser()
