@@ -6,12 +6,12 @@
 # Eli Bendersky [https://eli.thegreenplace.net/]
 # License: BSD
 #------------------------------------------------------------------------------
-from ply import yacc
 
 from . import c_ast
-from . import c_lexer
-from plyparser import PLYParser, ParseError, parameterized, template
-from ast_transforms import fix_switch_cases, fix_atomic_specifiers
+from ply import yacc
+from backend.CFG_C.c_lexer import CLexer
+from backend.CFG_C.PlyParser import PLYParser, ParseError, parameterized, template
+from backend.CFG_C.ast_transforms import fix_switch_cases, fix_atomic_specifiers
 
 
 @template
