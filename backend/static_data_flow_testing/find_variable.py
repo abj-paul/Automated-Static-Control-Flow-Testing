@@ -9,7 +9,7 @@ def find_variable_usage(lines, variable):
             right_side_of_assignment = line.split("=")[1]
             tokens = tokenize(right_side_of_assignment)
             if variable in tokens:
-                result.append((variable, line, loc))
+                result.append((variable, line, loc, "u"))
 
     return result
 

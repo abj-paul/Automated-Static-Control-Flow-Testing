@@ -9,22 +9,22 @@ def detect_data_flow_data_flow_table(c_code):
 
     # Extract variable definitions, kills, and uses with line numbers
     lines = c_code.split('\n')
-    definitions = [(match.group(1), match.group(), i) for i, line in enumerate(lines) for match in definition_pattern.finditer(line)]
+    definitions = [(match.group(1), match.group(), i, "d") for i, line in enumerate(lines) for match in definition_pattern.finditer(line)]
     kills = []
     uses = []
-    for variable, _, loc in definitions:
+    for variable, _, loc, _ in definitions:
         uses.extend(find_variable_usage(lines, variable))
         eol = find_where_scope_ends_given_definition_loc(c_code, loc)
-        kills.append((variable, lines[eol] ,eol))
+        kills.append((variable, lines[eol] ,eol, "k"))
 
-    print(f"DEbug: D={definitions}")
-    print(f"DEbug: U={uses}")
-    print(f"DEbug: K={kills}")
+    
+    duk_list = definitions + kills + uses
+    duk_list.sort(key=lambda x: x[2])
 
     # Detect data-flow data_flow_table
     data_flow_table = []
-    for variable1, line1, lineno1 in definitions:
-        for variable2, line2, lineno2 in definitions:
+    for variable1, line1, lineno1, _ in definitions:
+        for variable2, line2, lineno2, _ in definitions:
             if variable1==variable2 and lineno1<lineno2:
                 data_flow_table.append({
                     "variable": variable1,
@@ -34,7 +34,7 @@ def detect_data_flow_data_flow_table(c_code):
                     "second_line": line2
                     })
                 break
-        for variable2, line2, lineno2 in uses:
+        for variable2, line2, lineno2, _ in uses:
             if variable1==variable2 and lineno1<lineno2:
                 data_flow_table.append({
                     "variable": variable1,
@@ -44,7 +44,7 @@ def detect_data_flow_data_flow_table(c_code):
                     "second_line": line2
                     })
                 break
-        for variable2, line2, lineno2 in kills:
+        for variable2, line2, lineno2, _ in kills:
             if variable1==variable2 and lineno1<lineno2:
                 data_flow_table.append({
                     "variable": variable1,
@@ -55,8 +55,8 @@ def detect_data_flow_data_flow_table(c_code):
                     })
                 break
 
-    for variable1, line1, lineno1 in uses:
-        for variable2, line2, lineno2 in definitions:
+    for variable1, line1, lineno1, _ in uses:
+        for variable2, line2, lineno2, _ in definitions:
             if variable1==variable2 and lineno1<lineno2:
                 data_flow_table.append({
                     "variable": variable1,
@@ -66,7 +66,7 @@ def detect_data_flow_data_flow_table(c_code):
                     "second_line": line2
                     })
                 break
-        for variable2, line2, lineno2 in uses:
+        for variable2, line2, lineno2, _ in uses:
             if variable1==variable2 and lineno1<lineno2:
                 data_flow_table.append({
                     "variable": variable1,
@@ -76,48 +76,21 @@ def detect_data_flow_data_flow_table(c_code):
                     "second_line": line2
                     })
                 break
-        for variable2, line2, lineno2 in kills:
-            if variable1==variable2 and lineno1<lineno2:
-                data_flow_table.append({
-                    "variable": variable1,
-                    "data_flow_pattern": 'uk',
-                    "lines": (lineno1, lineno2),
-                    "first_line": line1,
-                    "second_line": line2
-                    })
-                break
+     
     
-    for variable1, line1, lineno1 in kills:
-        for variable2, line2, lineno2 in definitions:
-            if variable1==variable2 and lineno1<lineno2:
-                data_flow_table.append({
+    for index in range(0, len(duk_list)-2):
+        if duk_list[index][3]=="k":
+            variable1, line1, lineno1, pattern1 = duk_list[index-1]
+            variable2, line2, lineno2, pattern2 = duk_list[index]
+            if lineno1>=lineno2: 
+                continue
+            data_flow_table.append({
                     "variable": variable1,
-                    "data_flow_pattern": 'kd',
+                    "data_flow_pattern": pattern1+pattern2,
                     "lines": (lineno1, lineno2),
                     "first_line": line1,
                     "second_line": line2
                     })
-                break
-        for variable2, line2, lineno2 in uses:
-            if variable1==variable2 and lineno1<lineno2:
-                data_flow_table.append({
-                    "variable": variable1,
-                    "data_flow_pattern": 'ku',
-                    "lines": (lineno1, lineno2),
-                    "first_line": line1,
-                    "second_line": line2
-                    })
-                break
-        for variable2, line2, lineno2 in kills:
-            if variable1==variable2 and lineno1<lineno2 and not ("}" in line1 and "}" in line2):
-                data_flow_table.append({
-                    "variable": variable1,
-                    "data_flow_pattern": 'kk',
-                    "lines": (lineno1, lineno2),
-                    "first_line": line1,
-                    "second_line": line2
-                    })
-                break
         
     return keep_unique_dicts(data_flow_table)
 
