@@ -12,10 +12,12 @@ const DataFlowTest = () => {
 
   const handleManualFileSubmit = async (filePath) => {
     try {
+      console.log("ok");
       const apiUrl = 'http://127.0.0.1:8000/api/v1/dataflow/code/file';
-      const response = await axios.post(apiUrl, { filePath });
+      const response = await axios.post(apiUrl, { code_url: filePath });
 
       setData(response.data);
+      console.log(data);
       setShowModal(true);
     } catch (error) {
       console.error('Error fetching data flow:', error);
