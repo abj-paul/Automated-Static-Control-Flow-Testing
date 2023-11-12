@@ -18,3 +18,55 @@ def find_last_usage_c(code, variable_name):
 
     return None
 
+def _find_closing_bracket(c_code, open_bracket_loc):
+    stack = []
+    
+    for loc, statement in enumerate(c_code.split("\n")):
+        for char in statement:
+            if char == '{':
+                stack.append(loc)
+                print(f"debug: {stack}")
+            elif char == '}':
+                if not stack:
+                    raise ValueError("Mismatched brackets: Found '}' without corresponding '{'")
+                open_bracket_index = stack.pop()
+                print(f"debug: {stack}")
+
+                if open_bracket_index == open_bracket_loc:
+                    return loc  # Found the matching closing bracket
+        
+    if stack:
+        raise ValueError("Mismatched brackets: Found '{' without corresponding '}'")
+    else:
+        raise ValueError("No closing bracket found for the specified open bracket location")
+
+def _find_nearest_opening_brace(c_code, loc):
+    lines = c_code.split("\n")
+    
+    for i in range(loc-1, -1, -1):  
+        if "{" in lines[i]:
+            return i   
+
+def find_where_scope_ends_given_definition_loc(c_code, variable_definition_loc):
+    opening_bracket_loc = _find_nearest_opening_brace(c_code, variable_definition_loc)
+    closing_bracket_loc = _find_closing_bracket(c_code, opening_bracket_loc)
+    return closing_bracket_loc
+
+c_code = """
+void main() {
+    int x = 10;
+    int y = 0;
+    if (x > 0) {
+        y = x - 1;
+        while (x > 5) {
+            y = x - 2;
+            x--;
+        }
+    } else {
+        x = y + 1;
+    }
+    anotherFunction();
+    return 0;
+}
+"""
+print(f"Expected = {15} \nFound = {find_where_scope_ends_given_definition_loc(c_code, 3)}")
