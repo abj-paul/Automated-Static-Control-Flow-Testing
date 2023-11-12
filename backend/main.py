@@ -51,8 +51,8 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
         "smell": get_variable_cases(code_link)
     }
 
-    # with open(f'../graph-visualization/public/{hash(code_link)}.json', 'w') as f:
-    #     json.dump(result, f)
+    with open(f'../graph-visualization/public/{hash(code_link)}.json', 'w') as f:
+        json.dump(result, f)
     # file = open(f'../graph-visualization/public/{hash(code_link)}.json', 'w') 
     # file.write(str(result))
     # file.close() 
@@ -109,7 +109,7 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
     data_flow_tables = []
     corresponding_filenames = []
     for function in functions:
-        print(f"DEBUG: {function}")
+        print(f"DEBUG: {function} {code_link}")
         data_flow_tables.append(detect_data_flow_data_flow_table(function))
         corresponding_filenames.append(code_link)
 
