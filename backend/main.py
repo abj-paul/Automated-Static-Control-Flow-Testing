@@ -58,18 +58,21 @@ async def generate_AST_from_project_url(code_url: ASTRequest):
     all_functions = []
     metrics = []
     smells = []
+    corresponding_filenames = []
     for root, _, filenames in os.walk(project_path):
         for filename in filenames:
             if filename.endswith('.c'):
                 print(f"DEBUG: Processing {filename}...")
                 filepath = os.path.join(root, filename)
                 functions = extract_functions_from_c_file(filepath)
-                print(f"DEBUG: {functions}")
+                #print(f"DEBUG: {functions}")
                 file_asts = []
                 file_variables = []
                 for function in functions:
                     file_asts.append(generate_ast_and_get_json(function))
                     file_variables.append(find_variables_to_test(function))
+                    corresponding_filenames.append(filename)
+
                 asts.append(file_asts)
                 variables.append(file_variables)
                 all_functions.append(functions)
@@ -78,6 +81,7 @@ async def generate_AST_from_project_url(code_url: ASTRequest):
                 smells.append(get_variable_cases(filepath))
    
     results =  {
+        "filenames": corresponding_filenames,
         "functions": all_functions,
         "asts": asts,
         "metrics": metrics,
@@ -106,6 +110,7 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
 async def generate_AST_from_code_url(code_url: ASTRequest):
     project_path = code_url.code_url
     data_flow_tables = []
+    corresponding_filenames = []
 
     for root, _, filenames in os.walk(project_path):
         for filename in filenames:
@@ -115,11 +120,13 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
                 functions = extract_functions_from_c_file(filepath)
                 data_flow_table_for_file = []
                 for function in functions:
-                    print(f"DEBUG: {function}")
+                    #print(f"DEBUG: {function}")
                     data_flow_table_for_file.append(detect_data_flow_data_flow_table(function))
+                    corresponding_filenames.append(filename)
             data_flow_tables.append(data_flow_table_for_file)
 
     return {
         "functions": functions,
+        "filenames": corresponding_filenames,
         "data_flow_tables": data_flow_tables
     }

@@ -124,7 +124,14 @@ def to_json(node, **kwargs):
     """ Convert ast node to json string """
     return json.dumps(to_dict(node), **kwargs)
 
+import json
+
+
+
 def generate_ast_and_get_json(c_function_code):
     ast = parser.parse(c_function_code)
-    return to_json(ast, sort_keys=True, indent=4)
+    json_form = to_json(ast, sort_keys=True, indent=4)
+    with open(f'temp/{hash(c_function_code)}.json', 'w') as f:
+        json.dump(json_form, f)
+    return f'temp/{hash(c_function_code)}.json'
 
