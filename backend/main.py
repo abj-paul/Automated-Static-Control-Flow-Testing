@@ -73,6 +73,7 @@ async def generate_AST_from_project_url(code_url: ASTRequest):
                 variables.append(file_variables)
                 all_functions.append(functions)
                 metrics.append(calculate_metrics(filepath))
+                print(f"DEBUG: cases = {get_variable_cases(filepath)}")
                 smells.append(get_variable_cases(filepath))
    
     results =  {

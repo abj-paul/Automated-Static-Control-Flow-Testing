@@ -1,5 +1,5 @@
-from pycparser import c_parser
 from backend.CFG_C import cfg_node
+from backend.CFG_C import parser
 
 class VariableNameVisitor(cfg_node.NodeVisitor):
     def __init__(self):
@@ -28,8 +28,8 @@ class VariableNameVisitor(cfg_node.NodeVisitor):
 def get_variable_cases(file_path):
     with open(file_path, 'r') as file:
         code = file.read()
-        parser = c_parser.CParser()
-        ast = parser.parse(code, filename='<string>')
+        myparser = parser.CParser()
+        ast = myparser.parse(code)
 
         visitor = VariableNameVisitor()
         visitor.visit(ast)
