@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 void enterData(int firstMatrix[][10], int secondMatrix[][10], int rowFirst, int columnFirst, int rowSecond, int columnSecond);
 void multiplyMatrices(int firstMatrix[][10], int secondMatrix[][10], int multResult[][10], int rowFirst, int columnFirst, int rowSecond, int columnSecond);
 void display(int mult[][10], int rowFirst, int columnSecond);
@@ -14,7 +12,6 @@ int main()
 	printf("Enter rows and column for second matrix: ");
 	scanf("%d %d", &rowSecond, &columnSecond);
 
-	// If colum of first matrix in not equal to row of second matrix, asking user to enter the size of matrix again.
 	while (columnFirst != rowSecond)
 	{
 		printf("Error! column of first matrix not equal to row of second.\n");
@@ -24,13 +21,10 @@ int main()
 		scanf("%d%d", &rowSecond, &columnSecond);
 	}
 
-	// Function to take matrices data
         enterData(firstMatrix, secondMatrix, rowFirst, columnFirst, rowSecond, columnSecond);
 
-        // Function to multiply two matrices.
         multiplyMatrices(firstMatrix, secondMatrix, mult, rowFirst, columnFirst, rowSecond, columnSecond);
 
-        // Function to display resultant matrix after multiplication.
         display(mult, rowFirst, columnSecond);
 
 	return 0;
@@ -64,7 +58,6 @@ void multiplyMatrices(int firstMatrix[][10], int secondMatrix[][10], int mult[][
 {
 	int i, j, k;
 
-	// Initializing elements of matrix mult to 0.
 	for(i = 0; i < rowFirst; ++i)
 	{
 		for(j = 0; j < columnSecond; ++j)
@@ -73,7 +66,6 @@ void multiplyMatrices(int firstMatrix[][10], int secondMatrix[][10], int mult[][
 		}
 	}
 
-	// Multiplying matrix firstMatrix and secondMatrix and storing in array mult.
 	for(i = 0; i < rowFirst; ++i)
 	{
 		for(j = 0; j < columnSecond; ++j)
