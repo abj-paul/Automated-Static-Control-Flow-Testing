@@ -1,7 +1,7 @@
 from pycparser import CParser
-from backend.CFG_C import cfg
+from backend.CFG_C import cfg_node
 
-class MetricVisitor(cfg.NodeVisitor):
+class MetricVisitor(cfg_node.NodeVisitor):
     def __init__(self):
         self.cyclomatic_complexity = 1  # Start with 1 for the main function
         self.function_metrics = []
@@ -32,7 +32,7 @@ class MetricVisitor(cfg.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Decl(self, node):
-        if isinstance(node.init, cfg.FuncDef):
+        if isinstance(node.init, cfg_node.FuncDef):
             # Function declarations are not counted as variables
             return
         self.variable_count += 1

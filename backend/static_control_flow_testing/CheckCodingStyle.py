@@ -1,12 +1,12 @@
 from pycparser import c_parser
-from backend.CFG_C import cfg
+from backend.CFG_C import cfg_node
 
-class VariableNameVisitor(cfg.NodeVisitor):
+class VariableNameVisitor(cfg_node.NodeVisitor):
     def __init__(self):
         self.variable_cases = []
 
     def visit_Decl(self, node):
-        if (isinstance(node.type, cfg.TypeDecl) and isinstance(node.type.type, cfg.IdentifierType)) or isinstance(node.type, cfg.FuncDecl):
+        if (isinstance(node.type, cfg_node.TypeDecl) and isinstance(node.type.type, cfg_node.IdentifierType)) or isinstance(node.type, cfg_node.FuncDecl):
             variable_name = node.name
             variable_case = self.get_variable_case(variable_name)
             self.variable_cases.append((variable_name, variable_case))
