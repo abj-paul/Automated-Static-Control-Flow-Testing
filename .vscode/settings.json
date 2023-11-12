@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./backend/static_control_flow_testing"
+    ]
+}

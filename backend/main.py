@@ -7,11 +7,11 @@ from fastapi.responses import JSONResponse
 from fastapi.responses import StreamingResponse
 import os
 
-from AST import generate_ast_and_get_json
-from SeparateFunctions import extract_functions_from_c_file
-from VariableHoisting import find_variables_to_test
-from backend.CheckCodingStyle import get_variable_cases
-from backend.Metrics import calculate_metrics
+from static_control_flow_testing.AST import generate_ast_and_get_json
+from static_control_flow_testing.SeparateFunctions import extract_functions_from_c_file
+from static_control_flow_testing.VariableHoisting import find_variables_to_test
+from static_control_flow_testing.CheckCodingStyle import get_variable_cases
+from static_control_flow_testing.Metrics import calculate_metrics
 from backend.temp.report import generate_report
 
 app = FastAPI()
