@@ -1,0 +1,25 @@
+.main-container{
+    align-items: center;
+}
+.divided-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+  }
+  
+  .left-side,
+  .right-side {
+    flex: 1;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .left-side h3,
+  .right-side h3 {
+    text-align: center;
+  }
+  

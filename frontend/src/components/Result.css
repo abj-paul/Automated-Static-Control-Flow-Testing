@@ -1,0 +1,35 @@
+/* Additional style to create spacing between tables */
+.table-card {
+    margin-bottom: 20px;
+  }
+  
+  /* Updated style to make each function details card more compact */
+  .function-details-card {
+    margin-bottom: 30px;
+    border: 1px solid #e1e4e8;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .function-details-card p {
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  /* Make the entire container full-width */
+  .data-flow-container {
+    width: 100%;
+  }
+  
+  /* Ensure proper spacing for responsiveness */
+  @media (max-width: 576px) {
+    .table-card {
+      margin-bottom: 10px;
+    }
+    
+    .function-details-card {
+      margin-bottom: 20px;
+    }
+  }
+  

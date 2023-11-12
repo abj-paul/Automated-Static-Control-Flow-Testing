@@ -14,5 +14,14 @@ int main() {
         x--;
     }
 
+ anotherFunction();
     return 0;
+}
+
+void anotherFunction() {
+    int y = 5;
+    for (int i = 0; i < y; i++) {
+        y += i;
+    }
+    uwuFunction();
 }

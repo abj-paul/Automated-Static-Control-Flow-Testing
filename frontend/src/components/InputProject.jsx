@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Button from './Button';
+import './Input.css';
 
-const ProjectPathInputForm = () => {
+const ProjectPathInputForm = ({ onSubmit }) => {
   const [projectPath, setProjectPath] = useState('');
 
   const handleInputChange = (e) => {
@@ -9,35 +11,22 @@ const ProjectPathInputForm = () => {
     setProjectPath(inputPath);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (projectPath.trim() !== '') {
-      const apiUrl = 'http://localhost:8080/api/v1/code/project'; 
-      axios.post(apiUrl, { projectPath })
-        .then(response => {
-          console.log('Project path:', projectPath);
-          console.log('Response:', response.data);
-        })
-        .catch(error => {
-          console.error('Error sending project path:', error);
-        });
-    } else {
-      alert('Please enter a valid project path');
-    }
+    onSubmit(projectPath);
   };
 
   return (
     <div>
-      <form onSubmit={handleFormSubmit}>
-        <label htmlFor="projectPathInput">Enter C project path:</label>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="projectPathInput">Enter C project path:</label><br />
         <input
           type="text"
           id="projectPathInput"
           value={projectPath}
           onChange={handleInputChange}
-        />
-        <button type="submit">Submit</button>
+        /> <br />
+        <Button type="submit">Submit</Button>
       </form>
     </div>
   );

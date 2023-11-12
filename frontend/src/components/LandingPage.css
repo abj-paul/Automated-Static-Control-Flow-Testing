@@ -1,0 +1,34 @@
+.divided-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .left-side,
+  .right-side {
+    flex: 1;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .right-side img {
+    border: 3px solid black;
+    max-width: 100%;
+    height: 60vh;
+    width: 30vw;
+  }
+  
+  .left-side Button, .right-side Button {
+    height: 10vh;
+    width: 30vw;
+    margin-top: 10px;
+    color: aliceblue;
+  }  
+  .left-side Button, .right-side Button a {
+    color: white;
+    text-decoration: none; /* Optional: Remove underline from links */
+  }

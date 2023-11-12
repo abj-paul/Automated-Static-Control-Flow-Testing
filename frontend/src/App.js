@@ -1,24 +1,20 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import TreeVisualization from './components/TreeVisualization';
-import FileInputComponent from './components/InputFile';
-import ProjectPathInputForm from './components/InputProject';
+import LandingPage from './components/LandingPage';
+import DataFlowTest from './components/DataFlowTest';
+import ControlFlowTest from './components/ControlFlowTest';
 
 function App() {
-  const [response, setResponse] = React.useState(null);
-  React.useEffect(() => {
-    fetch('http://localhost:5000/')
-      .then(res => res.json())
-      .then(data => setResponse(data))
-      .catch(err => console.log(err));
-  }, []);
-
   return (
     <div className="App">
-      <FileInputComponent />
-      <ProjectPathInputForm />
-      <h1>Tree Visualization</h1>
-      <TreeVisualization {...response} />
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/control-flow-testing" element={<ControlFlowTest />} />
+          <Route path="/data-flow-testing" element={<DataFlowTest />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
