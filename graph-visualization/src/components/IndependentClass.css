@@ -1,0 +1,19 @@
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 10px;
+  }
+  
+  .single-box {
+    grid-column: span 3; /* Span all three columns */
+    padding: 3px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .triple-box {
+    grid-column: span 1; /* Span one column */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  

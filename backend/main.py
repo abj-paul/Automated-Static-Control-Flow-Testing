@@ -5,9 +5,10 @@ from pydantic import BaseModel
 from typing import Optional
 from fastapi.responses import JSONResponse
 from fastapi.responses import StreamingResponse
+from fastapi import Response
 import os
 from static_data_flow_testing.data_flow import detect_data_flow_data_flow_table
-
+import json
 from static_control_flow_testing.AST import generate_ast_and_get_json
 from static_control_flow_testing.SeparateFunctions import extract_functions_from_c_file
 from static_control_flow_testing.VariableHoisting import find_variables_to_test
@@ -44,7 +45,7 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
 
     return {
         "functions": functions,
-        "asts": asts,
+        "asts": json.loads(asts),
         "metrics": calculate_metrics(code_link),
         "variables": variables,
         "smell": get_variable_cases(code_link)
