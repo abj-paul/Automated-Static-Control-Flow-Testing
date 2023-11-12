@@ -59,8 +59,8 @@ def tokenize(c_code_line):
         tok = lexer.token()
         if not tok:
             break
-        if tok.type == 'IDENTIFIER':
-            identifiers.append(tok.value)
+        #if tok.type == 'IDENTIFIER':
+        identifiers.append(tok.value)
     return identifiers
 
 

@@ -1,4 +1,5 @@
 import re
+from tokenizer_statement import tokenize
 
 def find_last_usage_c(code, variable_name):
     # Regular expression pattern to find variable usage
@@ -22,15 +23,13 @@ def _find_closing_bracket(c_code, open_bracket_loc):
     stack = []
     
     for loc, statement in enumerate(c_code.split("\n")):
-        for char in statement:
+        for char in tokenize(statement):
             if char == '{':
                 stack.append(loc)
-                print(f"debug: {stack}")
             elif char == '}':
                 if not stack:
                     raise ValueError("Mismatched brackets: Found '}' without corresponding '{'")
                 open_bracket_index = stack.pop()
-                print(f"debug: {stack}")
 
                 if open_bracket_index == open_bracket_loc:
                     return loc  # Found the matching closing bracket
@@ -44,7 +43,8 @@ def _find_nearest_opening_brace(c_code, loc):
     lines = c_code.split("\n")
     
     for i in range(loc-1, -1, -1):  
-        if "{" in lines[i]:
+        tokens = tokenize(lines[i])
+        if "{" in tokens:
             return i   
 
 def find_where_scope_ends_given_definition_loc(c_code, variable_definition_loc):
