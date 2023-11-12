@@ -1,6 +1,7 @@
 /* Additional style to create spacing between tables */
 .table-card {
     margin-bottom: 20px;
+    flex-direction: column;
   }
   
   /* Updated style to make each function details card more compact */

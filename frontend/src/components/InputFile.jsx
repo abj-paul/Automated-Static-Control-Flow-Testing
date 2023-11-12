@@ -3,7 +3,7 @@ import axios from 'axios';
 import Button from './Button';
 import './Input.css';
 
-const ManualFileInputComponent = () => {
+const ManualFileInputComponent = ({ onSubmit }) => {
   const [filePath, setFilePath] = useState('');
 
   const handleInputChange = (e) => {
@@ -11,16 +11,23 @@ const ManualFileInputComponent = () => {
     setFilePath(inputPath);
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(filePath);
+  };
+
   return (
-    <div className="container">
-      <label htmlFor="manualFileInput">Enter .c file path:</label><br />
-      <input
-        type="text"
-        id="manualFileInput"
-        value={filePath}
-        onChange={handleInputChange}
-      /> <br />
-      <Button>Submit</Button>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="manualFileInput">Enter .c file path:</label><br />
+        <input
+          type="text"
+          id="manualFileInput"
+          value={filePath}
+          onChange={handleInputChange}
+        /> <br />
+        <Button type="submit">Submit</Button>
+      </form>
     </div>
   );
 };
