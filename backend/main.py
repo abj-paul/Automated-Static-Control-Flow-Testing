@@ -6,6 +6,7 @@ from typing import Optional
 from fastapi.responses import JSONResponse
 from fastapi.responses import StreamingResponse
 import os
+from static_data_flow_testing.data_flow import detect_data_flow_data_flow_table
 
 from static_control_flow_testing.AST import generate_ast_and_get_json
 from static_control_flow_testing.SeparateFunctions import extract_functions_from_c_file
@@ -85,3 +86,38 @@ async def generate_AST_from_project_url(code_url: ASTRequest):
 
 
     return results
+
+@app.post("/api/v1/dataflow/code/file/")
+async def generate_AST_from_code_url(code_url: ASTRequest):
+    code_link = code_url.code_url
+    functions = extract_functions_from_c_file(code_link)
+    data_flow_tables = []
+    for function in functions:
+        print(f"DEBUG: {function}")
+        data_flow_tables.append(detect_data_flow_data_flow_table(function))
+
+    return {
+        "functions": functions,
+        "data_flow_tables": data_flow_tables
+    }
+@app.post("/api/v1/dataflow/code/project/")
+async def generate_AST_from_code_url(code_url: ASTRequest):
+    project_path = code_url.code_url
+    data_flow_tables = []
+
+    for root, _, filenames in os.walk(project_path):
+        for filename in filenames:
+            if filename.endswith('.c'):
+                print(f"DEBUG: Processing {filename}...")
+                filepath = os.path.join(root, filename)
+                functions = extract_functions_from_c_file(filepath)
+                data_flow_table_for_file = []
+                for function in functions:
+                    print(f"DEBUG: {function}")
+                    data_flow_table_for_file.append(detect_data_flow_data_flow_table(function))
+            data_flow_tables.append(data_flow_table_for_file)
+
+    return {
+        "functions": functions,
+        "data_flow_tables": data_flow_tables
+    }

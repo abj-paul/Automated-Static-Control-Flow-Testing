@@ -1,5 +1,5 @@
 import re
-from tokenizer_statement import tokenize
+from static_data_flow_testing.tokenizer_statement import tokenize
 
 def find_variable_usage(lines, variable):
     result = []

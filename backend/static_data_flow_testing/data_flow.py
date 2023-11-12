@@ -1,7 +1,6 @@
 import re
-from kill import find_where_scope_ends_given_definition_loc
-
-from find_variable import find_variable_usage, keep_unique_dicts
+from static_data_flow_testing.kill import find_where_scope_ends_given_definition_loc
+from static_data_flow_testing.find_variable import find_variable_usage, keep_unique_dicts
 
 def detect_data_flow_data_flow_table(c_code):
     # Regular expressions to match variable definitions, kills, and uses
@@ -94,24 +93,24 @@ def detect_data_flow_data_flow_table(c_code):
         
     return keep_unique_dicts(data_flow_table)
 
-# Example C function
-c_function = """
-void example_function() {
-    int a = 10;  // Defined (d)
-    int b = a + 5;  // Defined (d), Usage (u)
-    int c = b * 2;  // Defined (d), Usage (u)
-    int d = c;  // Defined (d), Usage (u)
+# # Example C function
+# c_function = """
+# void example_function() {
+#     int a = 10;  // Defined (d)
+#     int b = a + 5;  // Defined (d), Usage (u)
+#     int c = b * 2;  // Defined (d), Usage (u)
+#     int d = c;  // Defined (d), Usage (u)
 
-    if (d > 0) {
-        a = a + 1;  // Usage (u)
-        int e = a * 2;  // Defined (d), Usage (u)
-    }
+#     if (d > 0) {
+#         a = a + 1;  // Usage (u)
+#         int e = a * 2;  // Defined (d), Usage (u)
+#     }
 
-    // Assume releasing memory or closing a file here
-}
-"""
+#     // Assume releasing memory or closing a file here
+# }
+# """
 
-data_flow_data_flow_table = detect_data_flow_data_flow_table(c_function)
+# data_flow_data_flow_table = detect_data_flow_data_flow_table(c_function)
 
-for anomaly in data_flow_data_flow_table:
-    print(f"{anomaly['variable']} | {anomaly['data_flow_pattern']} | {anomaly['lines']}")
+# for anomaly in data_flow_data_flow_table:
+#     print(f"{anomaly['variable']} | {anomaly['data_flow_pattern']} | {anomaly['lines']}")
