@@ -1,8 +1,8 @@
 import re
 
-from find_variable import find_variable_usage
+from find_variable import find_variable_usage, keep_unique_dicts
 
-def detect_data_flow_anomalies(c_code):
+def detect_data_flow_data_flow_table(c_code):
     # Regular expressions to match variable definitions, kills, and uses
     definition_pattern = re.compile(r'(\b\w+\b)\s*=\s*.*;')
     kill_pattern = re.compile(r'(\b\w+\b)\s*=\s*.*\(.*\);')  # Assuming kills involve function calls
@@ -19,12 +19,12 @@ def detect_data_flow_anomalies(c_code):
     print(f"DEbug: U={uses}")
     print(f"DEbug: K={kills}")
 
-    # Detect data-flow anomalies
-    anomalies = []
+    # Detect data-flow data_flow_table
+    data_flow_table = []
     for variable1, line1, lineno1 in definitions:
         for variable2, line2, lineno2 in definitions:
             if variable1==variable2 and lineno1<lineno2:
-                anomalies.append({
+                data_flow_table.append({
                     "variable": variable1,
                     "data_flow_pattern": 'dd',
                     "lines": (lineno1, lineno2),
@@ -34,7 +34,7 @@ def detect_data_flow_anomalies(c_code):
                 break
         for variable2, line2, lineno2 in uses:
             if variable1==variable2 and lineno1<lineno2:
-                anomalies.append({
+                data_flow_table.append({
                     "variable": variable1,
                     "data_flow_pattern": 'du',
                     "lines": (lineno1, lineno2),
@@ -44,7 +44,7 @@ def detect_data_flow_anomalies(c_code):
                 break
         for variable2, line2, lineno2 in kills:
             if variable1==variable2 and lineno1<lineno2:
-                anomalies.append({
+                data_flow_table.append({
                     "variable": variable1,
                     "data_flow_pattern": 'dk',
                     "lines": (lineno1, lineno2),
@@ -52,7 +52,72 @@ def detect_data_flow_anomalies(c_code):
                     "second_line": line2
                     })
                 break
-    return anomalies
+
+    for variable1, line1, lineno1 in uses:
+        for variable2, line2, lineno2 in definitions:
+            if variable1==variable2 and lineno1<lineno2:
+                data_flow_table.append({
+                    "variable": variable1,
+                    "data_flow_pattern": 'ud',
+                    "lines": (lineno1, lineno2),
+                    "first_line": line1,
+                    "second_line": line2
+                    })
+                break
+        for variable2, line2, lineno2 in uses:
+            if variable1==variable2 and lineno1<lineno2:
+                data_flow_table.append({
+                    "variable": variable1,
+                    "data_flow_pattern": 'uu',
+                    "lines": (lineno1, lineno2),
+                    "first_line": line1,
+                    "second_line": line2
+                    })
+                break
+        for variable2, line2, lineno2 in kills:
+            if variable1==variable2 and lineno1<lineno2:
+                data_flow_table.append({
+                    "variable": variable1,
+                    "data_flow_pattern": 'uk',
+                    "lines": (lineno1, lineno2),
+                    "first_line": line1,
+                    "second_line": line2
+                    })
+                break
+    
+    for variable1, line1, lineno1 in kills:
+        for variable2, line2, lineno2 in definitions:
+            if variable1==variable2 and lineno1<lineno2:
+                data_flow_table.append({
+                    "variable": variable1,
+                    "data_flow_pattern": 'kd',
+                    "lines": (lineno1, lineno2),
+                    "first_line": line1,
+                    "second_line": line2
+                    })
+                break
+        for variable2, line2, lineno2 in uses:
+            if variable1==variable2 and lineno1<lineno2:
+                data_flow_table.append({
+                    "variable": variable1,
+                    "data_flow_pattern": 'ku',
+                    "lines": (lineno1, lineno2),
+                    "first_line": line1,
+                    "second_line": line2
+                    })
+                break
+        for variable2, line2, lineno2 in kills:
+            if variable1==variable2 and lineno1<lineno2:
+                data_flow_table.append({
+                    "variable": variable1,
+                    "data_flow_pattern": 'kk',
+                    "lines": (lineno1, lineno2),
+                    "first_line": line1,
+                    "second_line": line2
+                    })
+                break
+        
+    return keep_unique_dicts(data_flow_table)
 
 # Example C function
 c_function = """
@@ -71,7 +136,7 @@ void example_function() {
 }
 """
 
-data_flow_anomalies = detect_data_flow_anomalies(c_function)
+data_flow_data_flow_table = detect_data_flow_data_flow_table(c_function)
 
-for anomaly in data_flow_anomalies:
+for anomaly in data_flow_data_flow_table:
     print(f"{anomaly['variable']} | {anomaly['data_flow_pattern']} | {anomaly['lines']}")

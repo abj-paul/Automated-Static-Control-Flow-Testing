@@ -12,3 +12,15 @@ def find_variable_usage(lines, variable):
                 result.append((variable, line, loc))
 
     return result
+
+def keep_unique_dicts(lst):
+    seen_dicts = set()
+    unique_dicts = []
+
+    for d in lst:
+        dict_tuple = tuple(sorted(d.items()))
+        if dict_tuple not in seen_dicts:
+            seen_dicts.add(dict_tuple)
+            unique_dicts.append(d)
+
+    return unique_dicts
