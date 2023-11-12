@@ -43,13 +43,21 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
         asts.append(generate_ast_and_get_json(function))
         variables.append(find_variables_to_test(function))
 
-    return {
+    result = {
         "functions": functions,
-        "asts": json.loads(asts),
+        "asts": asts,
         "metrics": calculate_metrics(code_link),
         "variables": variables,
         "smell": get_variable_cases(code_link)
     }
+
+    # with open(f'../graph-visualization/public/{hash(code_link)}.json', 'w') as f:
+    #     json.dump(result, f)
+    file = open(f'../graph-visualization/public/{hash(code_link)}.json', 'w') 
+    file.write(result) 
+    file.close() 
+
+    return f'../graph-visualization/public/{hash(code_link)}.json'
 
 @app.post("/api/v1/code/project")
 async def generate_AST_from_project_url(code_url: ASTRequest):
@@ -103,7 +111,7 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
     for function in functions:
         print(f"DEBUG: {function}")
         data_flow_tables.append(detect_data_flow_data_flow_table(function))
-        corresponding_filenames.append(code_url)
+        corresponding_filenames.append(code_link)
 
 
     return {
