@@ -17,12 +17,14 @@
   .data-flow-container {
     align-items: center;
     width: 100%;
+    height: 150vh;
   }
   
   /* Ensure proper spacing for responsiveness */
   @media (max-width: 576px) {
     .table-card {
       margin-bottom: 10px;
+      height: 100vh;
     }
     
     .function-details-card {
@@ -38,10 +40,10 @@
     border: 1px solid #e1e4e8;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: max-content;
   }
   
   .function-details-row {
-    display: flex;
     justify-content: space-between;
   }
   
@@ -50,13 +52,13 @@
   }
   
   .table-card {
+    font-size: small;
     margin-bottom: 20px;
   }
   
   .table-card table {
     width: 100%;
   }
-  
 
 /* Ensure proper spacing for responsiveness */
 @media (max-width: 576px) {

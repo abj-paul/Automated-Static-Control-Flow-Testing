@@ -6,7 +6,7 @@ const TableComponent = ({ table, index }) => {
   console.log(table);
 
   return (
-    <div key={index} className="card table-card" style={{ position: 'relative', marginBottom: '20px' }}>
+    <div key={index} className="card table-card" style={{ marginBottom: '65vh' }}>
       <div className="card-body">
         <h5>Table {index + 1}</h5><br />
         <table className="table table-bordered">
@@ -31,7 +31,7 @@ const TableComponent = ({ table, index }) => {
             ))}
           </tbody>
         </table>
-      </div><br /><br />
+      </div>
     </div>
   );
 };
@@ -40,9 +40,11 @@ const FunctionDetailsComponent = ({ functionName, data }) => (
   <div className="card function-details-card" style={{ marginBottom: '20px' }}>
     <div className="card-body">
       <p>{functionName}</p>
-      {data && data.map((table, index) => (
-        <TableComponent key={index} table={table} index={index} />
-      ))}
+      <div >
+        {data && data.map((table, index) => (
+          <TableComponent key={index} table={table} index={index} />
+        ))}
+      </div>
     </div>
   </div>
 );
@@ -54,7 +56,7 @@ const DataFlowComponentProject = ({ functionData }) => {
   }
 
   return (
-    <div className="container mt-4 data-flow-container">
+    <div className="container data-flow-container">
       {functionData.functions.map((func, index) => (
         <h2 key={index}>{func}</h2>
       ))}
