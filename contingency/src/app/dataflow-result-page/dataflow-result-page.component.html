@@ -1,0 +1,27 @@
+<p>dataflow-result-page works!</p>
+
+<div class="container">
+    <div class="row" *ngFor="let function of resultLoaded.functions; index as i;">
+        <div class="col-sm-5">
+            <p>Filename: {{resultLoaded.filenames[i]}}</p>
+            <pre>{{resultLoaded.functions[i]}}</pre>
+        </div>
+        <div class="col-sm-7">
+            <p>Data Flow Table</p>
+            <table class="table">
+                <tr>
+                    <th>Variable</th>
+                    <th>DUK Pattern</th>
+                    <th>Line Numbers</th>
+                    <th>Comments</th>
+                </tr>
+                <tr *ngFor="let row of resultLoaded.data_flow_tables[i]; index as j;">                
+                    <td>{{resultLoaded.data_flow_tables[i][j].variable}}</td>
+                    <td>{{resultLoaded.data_flow_tables[i][j].data_flow_pattern}}</td>
+                    <td>{{resultLoaded.data_flow_tables[i][j].lines}}</td>
+                    <td>Only ud kk dk and ku is risky.</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
