@@ -1,6 +1,16 @@
 import React from 'react';
 import './Result.css';
 
+const TableRow = ({ row }) => (
+  <tr>
+    <td>{row.variable}</td>
+    <td>{row.data_flow_pattern}</td>
+    <td>{row.lines.join(', ')}</td>
+    <td>{row.first_line}</td>
+    <td>{row.second_line}</td>
+  </tr>
+);
+
 const TableComponent = ({ table, index }) => (
   <div key={index} className="card table-card" style={{ position: 'relative', marginBottom: '20px' }}>
     <div className="card-body">
@@ -17,13 +27,7 @@ const TableComponent = ({ table, index }) => (
         </thead>
         <tbody>
           {table.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              <td>{row.variable}</td>
-              <td>{row.data_flow_pattern}</td>
-              <td>{row.lines.join(', ')}</td>
-              <td>{row.first_line}</td>
-              <td>{row.second_line}</td>
-            </tr>
+            <TableRow key={rowIndex} row={row} />
           ))}
         </tbody>
       </table>
@@ -35,9 +39,7 @@ const FunctionDetailsComponent = ({ functionName, data, index }) => (
   <div key={index} className="card function-details-card" style={{ marginBottom: '20px' }}>
     <div className="card-body">
       <p>{functionName}</p>
-      {data && data.map((table, tableIndex) => (
-        <TableComponent key={tableIndex} table={table} index={tableIndex} />
-      ))}
+      {data && <TableComponent table={data} index={index} />}
     </div>
   </div>
 );

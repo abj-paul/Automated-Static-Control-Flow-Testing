@@ -108,7 +108,7 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
     return {
         "functions": functions,
         "filenames": corresponding_filenames,
-        "data_flow_tables": data_flow_tables
+        "data_flow_tables": [data_flow_tables]
     }
 @app.post("/api/v1/dataflow/code/project/")
 async def generate_AST_from_code_url(code_url: ASTRequest):
