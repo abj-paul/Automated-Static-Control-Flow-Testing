@@ -9,15 +9,18 @@ import { JsonLoadService } from '../services/json-load.service';
 })
 export class ControlflowGraphPageComponent  implements OnInit{
   resultLoaded : any;
-  astJson: any;
+  astJsons : any[] = [];
 
   ngOnInit(): void {
     this.resultLoaded = this.resultStoreService.dataFlowFileResult;
-    this.jsonLoadService.loadData('assets/data.json').subscribe(data => {
-      this.astJson = data;
-      console.log(this.astJson);
-    });
-    console.log(this.resultLoaded);
+
+    for(let i=0; i<this.resultLoaded.asts.length; i++){
+      this.jsonLoadService.loadData(this.resultLoaded.asts[i]).subscribe(data => { //assets/data/7178354814366139251.json'
+        this.astJsons.push(data);
+        console.log(data);
+        console.log("Done loading AST "+(i+1));
+      });
+    }
   }
 
   constructor(private resultStoreService: ResultStoreServiceService, private jsonLoadService: JsonLoadService){}

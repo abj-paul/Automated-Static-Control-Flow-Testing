@@ -131,7 +131,7 @@ import json
 def generate_ast_and_get_json(c_function_code):
     ast = parser.parse(c_function_code)
     json_form = to_json(ast, sort_keys=True, indent=4)
-    with open(f'temp/{hash(c_function_code)}.json', 'w') as f:
+    with open(f'../contingency/src/assets/data/{hash(c_function_code)}.json', 'w') as f:
         json.dump(json_form, f)
-    return f'temp/{hash(c_function_code)}.json'
+    return f'assets/data/{hash(c_function_code)}.json'
 
