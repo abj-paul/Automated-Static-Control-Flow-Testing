@@ -2,50 +2,64 @@ import React from 'react';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import './Result.css';
 
-const DataFlowComponentProject = ({ resultLoaded }) => {
+const TableComponent = ({ table, index }) => {
+  console.log(table);
+
   return (
-    <div>
-      <p>Data Flow Testing: Project</p>
-      {resultLoaded.filenames.map((filename, i) => (
-        <div key={i} className="container">
-          <h1>Filename: {filename}</h1>
-          {resultLoaded.functions[i].map((functions, j) => (
-            <div key={j} className="row">
-              <div className="col-sm-5">
-                <pre>{resultLoaded.functions[i][j]}</pre>
-              </div>
-              <div className="col-sm-7">
-                <p>Data Flow Table</p>
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>Variable</th>
-                      <th>DUK Pattern</th>
-                      <th>Line Numbers</th>
-                      <th>Comments</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {resultLoaded.data_flow_tables[i][j].map((row, k) => (
-                      <tr key={k}>
-                        <td>{row.variable}</td>
-                        <td>{resultLoaded.data_flow_tables[i][j][k].data_flow_pattern}</td>
-                        <td>{resultLoaded.data_flow_tables[i][j][k].lines}</td>
-                        <td>
-                          {['ud', 'kk', 'dk', 'ku'].includes(row.data_flow_pattern) ? (
-                            <p>Risky code!</p>
-                          ) : (
-                            <p>Normal code</p>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ))}
-        </div>
+    <div key={index} className="card table-card" style={{ position: 'relative', marginBottom: '20px' }}>
+      <div className="card-body">
+        <h5>Table {index + 1}</h5><br />
+        <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th>Variable</th>
+              <th>Data Flow Pattern</th>
+              <th>Lines</th>
+              <th>First Line</th>
+              <th>Second Line</th>
+            </tr>
+          </thead>
+          <tbody>
+            {table.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                <td>{row.variable}</td>
+                <td>{row.data_flow_pattern}</td>
+                <td>{row.lines.join(', ')}</td>
+                <td>{row.first_line}</td>
+                <td>{row.second_line}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div><br /><br />
+    </div>
+  );
+};
+
+const FunctionDetailsComponent = ({ functionName, data }) => (
+  <div className="card function-details-card" style={{ marginBottom: '20px' }}>
+    <div className="card-body">
+      <p>{functionName}</p>
+      {data && data.map((table, index) => (
+        <TableComponent key={index} table={table} index={index} />
+      ))}
+    </div>
+  </div>
+);
+
+const DataFlowComponentProject = ({ functionData }) => {
+  console.log(functionData);
+  if (!functionData) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="container mt-4 data-flow-container">
+      {functionData.functions.map((func, index) => (
+        <h2 key={index}>{func}</h2>
+      ))}
+      {functionData.filenames.map((func, index) => (
+        <FunctionDetailsComponent key={index} functionName={func} data={functionData.data_flow_tables[index]} />
       ))}
     </div>
   );

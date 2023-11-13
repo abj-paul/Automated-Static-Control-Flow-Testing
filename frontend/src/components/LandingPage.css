@@ -1,34 +1,37 @@
 .divided-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  .left-side,
-  .right-side {
-    flex: 1;
-    padding: 20px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .right-side img {
-    border: 3px solid black;
-    max-width: 100%;
-    height: 60vh;
-    width: 30vw;
-  }
-  
-  .left-side Button, .right-side Button {
-    height: 10vh;
-    width: 30vw;
-    margin-top: 10px;
-    color: aliceblue;
-  }  
-  .left-side Button, .right-side Button a {
-    color: white;
-    text-decoration: none; /* Optional: Remove underline from links */
-  }
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  align-items: center;
+}
+
+.left-side,
+.right-side {
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center; /* Adjust text alignment as needed */
+}
+
+
+.right-side img {
+  border: 3px solid black;
+  max-width: 100%;
+  height: 60vh;
+  width: 30vw;
+  margin: 0 auto; /* Center the image */
+}
+
+.left-side Button,
+.right-side Button {
+  height: 10vh;
+  width: 30vw;
+  margin-top: 10px;
+  color: aliceblue;
+  display: block;
+  margin: 0 auto; /* Center the button */
+}
+
+.left-side Button a,
+.right-side Button a {
+  color: white;
+  text-decoration: none;
+}

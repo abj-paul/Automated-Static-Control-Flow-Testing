@@ -1,3 +1,5 @@
+// Result.jsx
+
 import React, { useState } from 'react';
 import DataFlowTest from './DataFlowTest';
 import { Route, Routes } from 'react-router-dom';
@@ -6,12 +8,9 @@ import DataFlowComponentProject from './HandleDataFlowResultProject';
 
 const Result = () => {
   const [postData, setPostData] = useState(null);
-  const [isFilePath, setIsFile] = useState(null);
 
-  const handlePostData = ({data, isFile}) => {
-    console.log(data);
-    setPostData(data);
-    setIsFile(isFile);
+  const handlePostData = (isFile) => {
+    setPostData({ isFile }); // Store isFile in the postData state
   };
 
   return (
@@ -21,8 +20,8 @@ const Result = () => {
       {postData && (
         <div>
           <Routes>
-            <Route path="/handle-file" element={<HandleFileComponent functionData={postData.data} />} />
-            <Route path="/data-flow-project" element={<DataFlowComponentProject functionData={postData.data} />} />
+            <Route path="/handle-file" element={<HandleFileComponent functionData={postData} />} />
+            <Route path="/data-flow-project" element={<DataFlowComponentProject functionData={postData} />} />
           </Routes>
         </div>
       )}
