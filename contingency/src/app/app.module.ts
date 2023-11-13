@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ControlflowProjectResultPageComponent } from './controlflow-project-result-page/controlflow-project-result-page.component';
 import { DataflowProjectResultPageComponent } from './dataflow-project-result-page/dataflow-project-result-page.component';
+import { ControlflowGraphPageComponent } from './controlflow-graph-page/controlflow-graph-page.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { DataflowProjectResultPageComponent } from './dataflow-project-result-pa
     DataflowResultPageComponent,
     ControlflowResultPageComponent,
     ControlflowProjectResultPageComponent,
-    DataflowProjectResultPageComponent
+    DataflowProjectResultPageComponent,
+    ControlflowGraphPageComponent
   ],
   imports: [
     BrowserModule,

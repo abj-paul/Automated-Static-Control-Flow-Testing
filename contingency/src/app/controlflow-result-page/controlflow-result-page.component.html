@@ -1,1 +1,44 @@
-<p>controlflow-result-page works!</p>
+<p>Control-result-page works!</p>
+
+<button [routerLink]="['/controlflow/result/file/graph']">View Control Flow Graph and Write test cases.</button>
+
+<div class="container">
+    <div class="row" *ngFor="let function of resultLoaded.functions; index as i;">
+        <h1>{{resultLoaded.metrics.FunctionMetrics[i].FunctionName}}</h1>
+        <div class="col-sm-5">
+            <pre>{{function}}</pre>
+        </div>
+        <div class="col-sm-3">
+            <table class="table">
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Cyclometric Complexity</td>
+                    <td>{{resultLoaded.metrics.FunctionMetrics[i].CyclomaticComplexity}}</td>
+                </tr>
+                <tr>
+                    <td>Number of Statements</td>
+                    <td>{{resultLoaded.metrics.FunctionMetrics[i].NumberOfStatements}}</td>
+                </tr>
+                <tr>
+                    <td>Number of Variables</td>
+                    <td>{{resultLoaded.metrics.FunctionMetrics[i].NumberOfVariables}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-sm-4">
+            <table class="table">
+                <tr>
+                    <th>Name</th>
+                    <th>Coding Style</th>
+                </tr>
+                <tr *ngFor="let res of resultLoaded.smell">
+                    <td>{{res[0]}}</td>
+                    <td>{{res[1]}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
