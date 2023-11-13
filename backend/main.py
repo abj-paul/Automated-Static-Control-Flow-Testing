@@ -114,6 +114,7 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
 async def generate_AST_from_code_url(code_url: ASTRequest):
     project_path = code_url.code_url
     data_flow_tables = []
+    all_functions = []
     corresponding_filenames = []
 
     for root, _, filenames in os.walk(project_path):
@@ -126,11 +127,12 @@ async def generate_AST_from_code_url(code_url: ASTRequest):
                 for function in functions:
                     #print(f"DEBUG: {function}")
                     data_flow_table_for_file.append(detect_data_flow_data_flow_table(function))
-                    corresponding_filenames.append(filename)
-            data_flow_tables.append(data_flow_table_for_file)
+                    data_flow_tables.append(data_flow_table_for_file)
+                corresponding_filenames.append(filename)
+                all_functions.append(functions)
 
     return {
-        "functions": functions,
+        "functions": all_functions,
         "filenames": corresponding_filenames,
         "data_flow_tables": data_flow_tables
     }

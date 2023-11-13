@@ -10,6 +10,8 @@ import { DataflowResultPageComponent } from './dataflow-result-page/dataflow-res
 import { ControlflowResultPageComponent } from './controlflow-result-page/controlflow-result-page.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { ControlflowProjectResultPageComponent } from './controlflow-project-result-page/controlflow-project-result-page.component';
+import { DataflowProjectResultPageComponent } from './dataflow-project-result-page/dataflow-project-result-page.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { HttpClientModule } from '@angular/common/http';
     DataflowProjectSubmitComponent,
     ControlflowProjectSubmitComponent,
     DataflowResultPageComponent,
-    ControlflowResultPageComponent
+    ControlflowResultPageComponent,
+    ControlflowProjectResultPageComponent,
+    DataflowProjectResultPageComponent
   ],
   imports: [
     BrowserModule,

@@ -18,11 +18,16 @@ export class DataflowProjectSubmitComponent {
       "code_url": this.link
     }).subscribe((result)=>{
       this.resultStoreService.dataFlowFileResult = result;
-      this.router.navigate(["dataflow/result"]);
+      this.router.navigate(["dataflow/result/file"]);
     })
   }
 
   submitProject(){
-    
+    this.httpClient.post<any>("http://localhost:8000/api/v1/dataflow/code/project", {
+      "code_url": this.link
+    }).subscribe((result)=>{
+      this.resultStoreService.dataFlowFileResult = result;
+      this.router.navigate(["dataflow/result/project"]);
+    })
   }
 }
