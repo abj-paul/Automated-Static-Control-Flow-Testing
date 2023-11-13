@@ -12,7 +12,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/control-flow-testing" element={<ControlFlowTest />} />
-          <Route path="/data-flow-testing" element={<DataFlowTest />} />
+          <Route path="/data-flow-testing/*" element={<DataFlowTest />} />
+          <Route path="/result" element={<DataFlowTest />} />
         </Routes>
       </Router>
     </div>

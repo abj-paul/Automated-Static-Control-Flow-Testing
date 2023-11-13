@@ -57,7 +57,7 @@
 .data-flow-container {
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 /* Ensure proper spacing for responsiveness */
