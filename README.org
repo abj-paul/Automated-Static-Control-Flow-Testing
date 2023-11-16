@@ -1,9 +1,6 @@
 * About
 C has always been a language where few automations were developed, mainly due to the mindset of the community. This is a project to automate test case generation for static control flow testing.
-** Branches
-Currently we are working on two branch.
-- dev branch is implementing the AST
-- backend branch is implementing the miscellaneouns functionalities
+
 
 * Installation
 #+begin_src bash
@@ -13,67 +10,43 @@ source backendEnv/bin/activate
 pip install -r requirements.txt
 
 uvicorn main:app --reload
-#pip install pycparser #https://github.com/eliben/pycparser/tree/master
 #+end_src
-#
 
 * Endpoints
-We have two endpoints available. 
-** /api/v1/code/project
-It takes the url of the C project as input, builds ast for each file of the project and returns it, along with the variables defined in the code. We need to test these variables.
+We have 4 endpoints available. 
+- /api/v1/dataflow/code/file
+- /api/v1/dataflow/code/project
+- /api/v1/code/file
+- /api/v1/code/project
 
-The following is the input.
-#+begin_src json
-{
-	"code_url": "./project-to-test/"
-}
-#+end_src
-The following is a part of the output.
-#+begin_src json
-{
-	"numberOfAsts": 1,
-	"asts": [
-		"{\n    \"_nodetype\": \"FileAST\",\n    \"coord\": null,\n    \"ext\": [\n   
-...
-		}
-	"variables": [
-			"paste",
-			"matrix",
-			"foo"
-		]
-}
-#+end_src
-** /api/v1/code/code
-It takes the url of a single C file as input, builds ast for it and returns it.
+** Static Control Flow Analysis
++ We reimplemented the pycparser library and completely made our code independent of the said library. Currently, our only requirements are ~pydantic~ and ~uvicorn~. It was a mammoth task considering we had to understand the intriniscs of the said library and use the parts that we need.
 
-The following is the input.
-#+begin_src json
-{
-	"code_url": "./project-to-test/"
-}
-#+end_src
-The following is a part of the output.
-#+begin_src json
-{
-	"ast": [
-		"{\n    \"_nodetype\": \"FileAST\",\n    \"coord\": null,\n    \"ext\": [\n   
-...
-		}
-	"variables": [
-			"paste",
-			"matrix",
-			"foo"
-		]
-}
-#+end_src
++ We used the CFG to find code smell.
++ We used the CFG to detect coding style.
++ We used the CFG to estimate cyclometric complexity.
+** Frontend of Control Flow Analysis
+A major part of the complexity in our project arose form:
++ ~parsing~ the complex CFG tree
++ showing it in a frontend graph
 
+We needed to show it in frontend because our aim was that the user will view the graph and write down the test cases from it.
+
+** Static Data Flow Analysis
+Here, we simply parsed our data to find static issues in the code.
+> Tokenizer
+> Find definition
+> Find useage
+> Find kill: Scope was a difficult task to complete without building a proper AST. We did not build ast becasue the method shown in the book generated static issues directly from the code. find_where_scope_ends_given_definition_loc() , _find_nearest_opening_brace()
+> We covered all dd du dk ud uu uk ku kd kk cases.
+> handled redundancies.
+
+** Frontend
+We developed two frontend for it due to a miscommunication. The frontend renders one for projects and one for files.
 
 * Execute
 We have a sample c file at ~test.c~. You can find more complex examples here [[https://github.com/eliben/pycparser/tree/master/examples][here]]. Check the c_files directory.
 
 Our main.py contains a boilerplate code from the above [[https://github.com/eliben/pycparser/tree/master/examples][link]]. This code converts a c file into a AST json format. You can run it by simply doing ~python3 main.py~.
 
-* TODO
-- [ ] Understanding AST : @Rifah @Muktadul
-- [ ] Converting JSON to Graph visualization @Jubaeer
-- [ ] DFS to find independent paths @Abhijit
+
